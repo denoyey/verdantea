@@ -78,6 +78,9 @@ export class SmoothScrollManager implements ISmoothScrollManager {
 
     gsap.ticker.add(this.tickerCallback);
     gsap.ticker.lagSmoothing(0);
+
+    // Initial calculation for ScrollTrigger
+    ScrollTrigger.refresh();
   }
 
   /**
@@ -132,7 +135,19 @@ export class SmoothScrollManager implements ISmoothScrollManager {
    * Smoothly animates to a target element, selector, or pixel position.
    */
   public scrollTo(target: ScrollTarget, options?: ScrollToOptions): void {
-    if (!this.lenis) return;
+    if (!this.lenis) {
+      if (typeof window !== "undefined") {
+        if (typeof target === "number") {
+          window.scrollTo({ top: target, behavior: "smooth" });
+        } else if (typeof target === "string") {
+          const el = document.querySelector(target);
+          el?.scrollIntoView({ behavior: "smooth" });
+        } else if (target instanceof HTMLElement) {
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+      return;
+    }
     this.lenis.scrollTo(target, options);
   }
 

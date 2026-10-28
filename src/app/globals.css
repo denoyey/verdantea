@@ -21,11 +21,17 @@
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(255, 255, 255, 0.7);
   --glass-dark: rgba(30, 45, 28, 0.82);
-  --blur: blur(24px) saturate(180%);
-  --radius-xl: 28px;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --radius-lg: 10px;
+  --radius-md: 6px;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -33,8 +39,20 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent iOS Safari auto-zoom on form inputs */
+@media screen and (max-width: 768px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* Lenis Smooth Scroll Recommended Styles */
@@ -103,4 +121,140 @@ html.lenis body {
 
 .animate-scroll-bounce {
   animation: bounce 2.5s ease-in-out infinite;
+}
+
+/* Hero Living & Continuous Breathing Animation */
+@keyframes heroLivingBreathing {
+  0% {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+
+  33% {
+    transform: scale(1.12) translate3d(-0.8%, -1.2%, 0);
+  }
+
+  66% {
+    transform: scale(1.08) translate3d(0.8%, -0.4%, 0);
+  }
+
+  100% {
+    transform: scale(1.14) translate3d(0, -1%, 0);
+  }
+}
+
+.animate-hero-live {
+  animation: heroLivingBreathing 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Steaming Cup Ritual Keyframes (No Blur) */
+@keyframes steamRiseOne {
+  0% {
+    opacity: 0.15;
+    transform: translateY(0) scaleX(0.9);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: translateY(-8px) scaleX(1.1);
+  }
+
+  100% {
+    opacity: 0.1;
+    transform: translateY(-16px) scaleX(1.25);
+  }
+}
+
+@keyframes steamRiseTwo {
+  0% {
+    opacity: 0.1;
+    transform: translateY(0) scaleX(1.1);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: translateY(-10px) scaleX(0.95);
+  }
+
+  100% {
+    opacity: 0.05;
+    transform: translateY(-20px) scaleX(1.3);
+  }
+}
+
+.animate-steam-1 {
+  animation: steamRiseOne 3.2s ease-in-out infinite;
+}
+
+.animate-steam-2 {
+  animation: steamRiseTwo 3.8s ease-in-out infinite 0.8s;
+}
+
+/* Organic Floating Tea Leaf Motion Graphics */
+@keyframes leafDriftSlow {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate3d(14px, -18px, 0) rotate(8deg);
+  }
+
+  66% {
+    transform: translate3d(-10px, -30px, 0) rotate(-6deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@keyframes leafDriftGentle {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  40% {
+    transform: translate3d(-16px, -22px, 0) rotate(-10deg);
+  }
+
+  75% {
+    transform: translate3d(10px, -12px, 0) rotate(5deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@keyframes teaSurfaceRipple {
+  0% {
+    transform: scale(0.94);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.35;
+  }
+
+  100% {
+    transform: scale(0.94);
+    opacity: 0.85;
+  }
+}
+
+.animate-leaf-float-1 {
+  animation: leafDriftSlow 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-leaf-float-2 {
+  animation: leafDriftGentle 18s ease-in-out infinite 1.5s;
+  will-change: transform;
+}
+
+.animate-tea-ripple {
+  animation: teaSurfaceRipple 5s ease-in-out infinite;
+  transform-origin: center;
 }

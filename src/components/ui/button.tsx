@@ -4,26 +4,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:pointer-events-none disabled:opacity-50 active:scale-95 cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2d3d2e] disabled:pointer-events-none disabled:opacity-50 active:scale-98 cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-500 hover:shadow-emerald-900/30",
+          "bg-[#2d3d2e] text-white shadow-xs hover:bg-[#3d533e]",
         secondary:
-          "bg-emerald-950/40 text-emerald-100 border border-emerald-800/50 hover:bg-emerald-900/60 hover:border-emerald-600/60 backdrop-blur-md",
+          "bg-[#f0ebe1] text-[#1a2218] border border-black/10 hover:bg-[#e7e1d5]",
         outline:
-          "border border-emerald-700/60 bg-transparent text-emerald-200 hover:bg-emerald-900/20 hover:text-white",
+          "border border-black/15 bg-transparent text-[#1a2218] hover:bg-black/5",
         ghost:
-          "text-emerald-300 hover:bg-emerald-900/30 hover:text-white",
-        lux:
-          "bg-linear-to-r from-amber-400 via-amber-300 to-yellow-500 text-emerald-950 font-semibold shadow-lg shadow-amber-900/20 hover:brightness-110",
+          "text-[#2d3d2e] hover:bg-black/5",
+        white:
+          "bg-white text-[#1a2218] shadow-sm hover:bg-[#f7f5f0]",
       },
       size: {
-        default: "h-11 px-6 py-2.5",
-        sm: "h-9 rounded-full px-4 text-xs",
-        lg: "h-13 rounded-full px-8 text-base tracking-wide",
-        icon: "h-10 w-10 p-0",
+        default: "h-10 px-5 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-12 rounded-lg px-7 text-base",
+        icon: "h-9 w-9 p-0",
       },
     },
     defaultVariants: {
