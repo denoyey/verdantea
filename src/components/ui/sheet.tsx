@@ -34,7 +34,7 @@ const sheetVariants = cva(
         bottom:
           "inset-x-0 bottom-0 rounded-t-lg border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom pb-[max(24px,env(safe-area-inset-bottom))]",
         float:
-          "bottom-[max(16px,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-92 max-w-[calc(100%-1.25rem)] max-h-[86svh] overflow-y-auto rounded-lg data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:w-120 sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
+          "bottom-[max(16px,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-92 max-w-[calc(100%-1rem)] min-[360px]:max-w-[calc(100%-1.25rem)] max-h-[86svh] overflow-y-auto rounded-lg data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:w-120 sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
         right:
           "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-md pb-[max(24px,env(safe-area-inset-bottom))]",
       },
@@ -61,7 +61,7 @@ const SheetContent = React.forwardRef<
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-md bg-black/5 text-[#4a5a48] transition-colors hover:bg-black/10 hover:text-[#1a2218] focus:outline-none focus:ring-2 focus:ring-[#2d3d2e] cursor-pointer">
+      <SheetPrimitive.Close className="absolute right-2.5 top-2.5 min-[360px]:right-4 min-[360px]:top-4 flex h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 items-center justify-center rounded-md bg-black/5 text-[#4a5a48] transition-colors hover:bg-black/10 hover:text-[#1a2218] focus:outline-none focus:ring-2 focus:ring-[#2d3d2e] cursor-pointer">
         <X className="h-4 w-4" />
         <span className="sr-only">Tutup</span>
       </SheetPrimitive.Close>
