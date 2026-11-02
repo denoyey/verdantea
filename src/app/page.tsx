@@ -37,7 +37,6 @@ import {
 import { RevealOnScroll } from "@/components/animated/RevealOnScroll";
 import { MagneticWrapper } from "@/components/animated/MagneticWrapper";
 import { LivingTeaChamber } from "@/components/animated/LivingTeaChamber";
-import { FloatingCheckoutDock } from "@/components/animated/FloatingCheckoutDock";
 
 interface Product {
   id: string;
@@ -104,7 +103,7 @@ interface CartItem {
 export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [navOpacity, setNavOpacity] = useState(1);
+  const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
   const heroBgRef = useRef<HTMLDivElement | null>(null);
 
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -138,17 +137,14 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fade out hero nav on scroll down
+  // Track scroll position to transition into Sticky Luxury Header
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      if (scrollY > 60) {
-        setNavOpacity(Math.max(0, 1 - (scrollY - 60) / 100));
-      } else {
-        setNavOpacity(1);
-      }
+      setIsScrolledPastHero(scrollY > 280);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -318,10 +314,107 @@ export default function Home() {
   return (
     <TooltipProvider delayDuration={200}>
       <div className="relative min-h-screen bg-[#e8e0d0] text-[#1a2218] font-sans selection:bg-[#6b8f5e] selection:text-white">
+        {/* ==================== GLOBAL STICKY LUXURY HEADER (AESOP/APPLE STYLE) ==================== */}
+        <header
+          className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolledPastHero
+            ? "bg-[#111a13] border-b border-white/10 shadow-lg py-2.5 sm:py-3"
+            : "bg-transparent border-b border-transparent py-3.5 sm:py-4"
+            } pt-[max(12px,env(safe-area-inset-top))] px-4 sm:px-6 lg:px-8`}
+        >
+          <div className="mx-auto max-w-7xl flex items-center justify-between gap-3">
+            {/* Left: Brand / Home Link */}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("hero");
+              }}
+              className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight no-underline group shrink-0"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/20 border border-white/30 text-emerald-200 transition-transform group-hover:scale-105">
+                🍃
+              </div>
+              <span className="font-serif tracking-wide text-xl">Verdantea</span>
+            </a>
+
+            {/* Center: Editorial Product Micro-Bar (Appears when scrolled past hero on tablet & desktop) */}
+            <div
+              className={`hidden md:flex items-center gap-2.5 rounded-md border border-white/10 bg-white/5 px-3.5 py-1 transition-all duration-300 ${isScrolledPastHero
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 -translate-y-2 pointer-events-none"
+                }`}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-[#a8c99a]" />
+              <span className="text-[12px] font-semibold text-white/95 tracking-wide">
+                Verdantea Pure Green
+              </span>
+              <span className="rounded bg-white/10 px-1.5 py-0.2 text-[9px] font-semibold text-[#a8c99a]">
+                50g
+              </span>
+              <span className="text-white/30 text-xs">•</span>
+              <span className="text-[11.5px] font-bold text-[#a8c99a]">
+                {totalCartCount > 0 ? formatRp(totalCartAmount) : "Rp 15.000"}
+              </span>
+              <span className="text-white/30 text-xs">•</span>
+              <span className="text-[11px] text-white/70">
+                {totalCartCount > 0 ? `${totalCartCount} item di keranjang` : "Stok Siap Kirim"}
+              </span>
+            </div>
+
+            {/* Right: Quick Buy/Checkout Action + Cart Button */}
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+              {/* Quick Action Button (Only visible when scrolled past hero) */}
+              {isScrolledPastHero && (
+                <>
+                  {totalCartCount > 0 ? (
+                    <button
+                      onClick={() => setIsCheckoutOpen(true)}
+                      className="flex items-center gap-1.5 rounded-md bg-[#25d366] hover:bg-[#20ba5a] text-[#0f2312] px-3 sm:px-3.5 py-1.5 text-[11.5px] sm:text-[12px] font-bold transition-all shadow-xs cursor-pointer active:scale-98"
+                    >
+                      <span>Checkout</span>
+                      <span className="hidden min-[420px]:inline"> WhatsApp</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-[#0f2312]" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => quickAddToCart(PRODUCTS_DATA[0])}
+                      className="flex items-center gap-1.5 rounded-md bg-[#6b8f5e] hover:bg-[#7ba36e] text-white px-3 sm:px-3.5 py-1.5 text-[11.5px] sm:text-[12px] font-bold transition-all shadow-xs cursor-pointer active:scale-98"
+                    >
+                      <ShoppingCart className="h-3.5 w-3.5 text-white" />
+                      <span>+ Beli (15k)</span>
+                    </button>
+                  )}
+                </>
+              )}
+
+              {/* Cart Drawer Trigger */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setIsCartOpen(true)}
+                    aria-label="Keranjang Belanja"
+                    className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-md border border-white/20 bg-black/40 text-white transition-all duration-200 hover:scale-105 hover:bg-black/60 active:scale-95 cursor-pointer"
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                    {totalCartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-md bg-[#ff3b30] text-[10px] font-bold text-white shadow-sm">
+                        {totalCartCount}
+                      </span>
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {totalCartCount > 0 ? `Keranjang (${totalCartCount})` : "Keranjang Kosong"}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+        </header>
+
         {/* ==================== HERO SECTION ==================== */}
         <section
           id="hero"
-          className="relative flex min-h-svh sm:h-svh min-h-135 sm:min-h-175 flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 overflow-hidden"
+          className="relative flex h-svh min-h-135 sm:min-h-175 flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 overflow-hidden"
         >
           {/* Parallax Container (controlled by GSAP ScrollTrigger, zero CSS transition interference for instant responsiveness) */}
           <div
@@ -344,48 +437,6 @@ export default function Home() {
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
             }}
           />
-
-          {/* Topbar Hero Nav (With iOS Safe Area Top padding for Notch/Dynamic Island) */}
-          <nav
-            style={{ opacity: navOpacity }}
-            className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 pt-[max(14px,env(safe-area-inset-top))] transition-opacity duration-300"
-          >
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection("hero");
-              }}
-              className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight no-underline"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white/20 border border-white/30 text-emerald-200">
-                🍃
-              </div>
-              <span className="font-serif tracking-wide text-xl">Verdantea</span>
-            </a>
-
-            <div className="flex items-center gap-2.5">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => setIsCartOpen(true)}
-                    aria-label="Keranjang Belanja"
-                    className="relative flex h-10 w-10 items-center justify-center rounded-md border border-white/25 bg-black/40 text-white transition-all duration-200 hover:scale-105 hover:bg-black/60 active:scale-95 cursor-pointer"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    {totalCartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-md bg-[#ff3b30] text-[10px] font-bold text-white shadow-sm">
-                        {totalCartCount}
-                      </span>
-                    )}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  {totalCartCount > 0 ? `Keranjang (${totalCartCount})` : "Keranjang Kosong"}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </nav>
 
           {/* Hero content - Centered Vertically with Spacious, Aesthetic Layout */}
           <div className="relative z-10 w-full max-w-230 px-3 sm:px-8 text-center text-white my-auto pt-14 sm:pt-16 pb-10 sm:pb-8">
@@ -1204,18 +1255,9 @@ export default function Home() {
           )}
         </Dialog>
 
-        {/* ==================== FLOATING PERSISTENT CHECKOUT DOCK ==================== */}
-        <FloatingCheckoutDock
-          cartCount={totalCartCount}
-          totalAmountFormatted={formatRp(totalCartAmount)}
-          onOpenCart={() => setIsCartOpen(true)}
-          onOpenCheckout={() => setIsCheckoutOpen(true)}
-          onQuickAdd={() => quickAddToCart(PRODUCTS_DATA[0])}
-        />
-
-        {/* ==================== FLOATING TOAST (TOP-CENTER - ZERO COLLISION WITH DOCK) ==================== */}
+        {/* ==================== FLOATING TOAST (TOP-CENTER BELOW STICKY HEADER) ==================== */}
         <div
-          className={`fixed z-50 top-[max(16px,env(safe-area-inset-top))] left-1/2 -translate-x-1/2 max-w-[calc(100%-2rem)] rounded-md bg-[#182419] border border-white/20 px-3.5 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-white shadow-2xl transition-all duration-300 ease-out flex items-center gap-2 sm:gap-2.5 whitespace-nowrap ${toastMessage ? "translate-y-0 opacity-100 scale-100" : "-translate-y-10 opacity-0 scale-95 pointer-events-none"
+          className={`fixed z-50 top-[max(64px,calc(env(safe-area-inset-top)+54px))] left-1/2 -translate-x-1/2 max-w-[calc(100%-2rem)] rounded-md bg-[#182419] border border-white/20 px-3.5 sm:px-5 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-semibold text-white shadow-2xl transition-all duration-300 ease-out flex items-center gap-2 sm:gap-2.5 whitespace-nowrap ${toastMessage ? "translate-y-0 opacity-100 scale-100" : "-translate-y-10 opacity-0 scale-95 pointer-events-none"
             }`}
         >
           <span className="flex h-2 w-2 rounded-full bg-[#a8c99a] animate-pulse" />
