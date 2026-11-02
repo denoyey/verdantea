@@ -145,6 +145,13 @@ html.lenis body {
 .animate-hero-live {
   animation: heroLivingBreathing 22s ease-in-out infinite alternate;
   will-change: transform;
+  transform: translateZ(0);
+}
+
+@media (max-width: 768px) {
+  .animate-hero-live {
+    will-change: auto;
+  }
 }
 
 /* Steaming Cup Ritual Keyframes (No Blur) */

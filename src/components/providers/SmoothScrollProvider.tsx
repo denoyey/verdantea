@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useSyncExternalStore } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { SmoothScrollManager } from "@/core/scroll/SmoothScrollManager";
 import type { ScrollManagerOptions } from "@/core/scroll/types";
 import "lenis/dist/lenis.css";
@@ -24,28 +24,10 @@ interface SmoothScrollProviderProps {
   options?: Partial<ScrollManagerOptions>;
 }
 
-// Subscribe to initialization status
-function subscribe(callback: () => void) {
-  const unsubscribe = managerInstance.on("scroll", () => callback());
-  return () => {
-    unsubscribe();
-  };
-}
-
-function getSnapshot() {
-  return managerInstance.isInitialized;
-}
-
-function getServerSnapshot() {
-  return false;
-}
-
 export function SmoothScrollProvider({
   children,
   options,
 }: SmoothScrollProviderProps) {
-  const isReady = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
   useEffect(() => {
     managerInstance.init(options);
 
@@ -55,7 +37,9 @@ export function SmoothScrollProvider({
   }, [options]);
 
   return (
-    <SmoothScrollContext.Provider value={{ manager: managerInstance, isReady }}>
+    <SmoothScrollContext.Provider
+      value={{ manager: managerInstance, isReady: managerInstance.isInitialized }}
+    >
       {children}
     </SmoothScrollContext.Provider>
   );

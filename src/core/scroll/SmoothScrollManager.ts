@@ -28,7 +28,8 @@ export class SmoothScrollManager implements ISmoothScrollManager {
     gestureOrientation: "vertical",
     smoothWheel: true,
     wheelMultiplier: 1,
-    touchMultiplier: 1.5,
+    touchMultiplier: 1,
+    syncTouch: false,
     infinite: false,
     autoRaf: false, // We control RAF via GSAP ticker
   };
@@ -77,7 +78,8 @@ export class SmoothScrollManager implements ISmoothScrollManager {
     };
 
     gsap.ticker.add(this.tickerCallback);
-    gsap.ticker.lagSmoothing(0);
+    // Use standard lag smoothing to eliminate visual frame drops and stutter
+    gsap.ticker.lagSmoothing(500, 33);
 
     // Initial calculation for ScrollTrigger
     ScrollTrigger.refresh();

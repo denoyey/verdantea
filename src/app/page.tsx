@@ -137,22 +137,32 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Track scroll position to transition into Sticky Luxury Header
+  // Track scroll position to transition into Sticky Luxury Header (throttled with rAF for 120fps smoothness)
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolledPastHero(scrollY > 280);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolledPastHero(window.scrollY > 280);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // GSAP Parallax depth effect on hero background (instant scrub without CSS transition delay)
+  // GSAP Parallax depth effect on hero background
+  // Active on desktop/tablet (>= 768px). On mobile, native hardware scrolling is preserved to eliminate stutter/freezing.
   useEffect(() => {
     if (!heroBgRef.current) return;
     gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      if (!heroBgRef.current) return;
       gsap.to(heroBgRef.current, {
         yPercent: 14,
         ease: "none",
@@ -160,11 +170,12 @@ export default function Home() {
           trigger: "#hero",
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 0.6,
         },
       });
     });
-    return () => ctx.revert();
+
+    return () => mm.revert();
   }, []);
 
 
@@ -437,9 +448,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Noise overlay */}
+          {/* Noise overlay - Desktop only (hidden on mobile to prevent GPU fill-rate freeze) */}
           <div
-            className="absolute inset-0 pointer-events-none opacity-40 z-1"
+            className="absolute inset-0 pointer-events-none opacity-40 z-1 hidden sm:block"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
             }}

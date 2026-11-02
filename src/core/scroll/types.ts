@@ -8,6 +8,7 @@ export interface ScrollManagerOptions {
   smoothWheel?: boolean;
   wheelMultiplier?: number;
   touchMultiplier?: number;
+  syncTouch?: boolean;
   infinite?: boolean;
   autoRaf?: boolean;
 }
