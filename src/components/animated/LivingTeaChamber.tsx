@@ -107,6 +107,7 @@ export function LivingTeaChamber({
             className="object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
             sizes="(max-width: 640px) 100vw, 480px"
             priority
+            quality={85}
           />
 
           {/* Genuine Editorial Bottom Bar */}
@@ -158,17 +159,17 @@ export function LivingTeaChamber({
         <div className="mt-3.5 min-[380px]:mt-4 flex items-center gap-2 min-[380px]:gap-2.5 pt-2.5 min-[380px]:pt-3 border-t border-[#2d3d2e]/10">
           <button
             onClick={onQuickAdd}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-md bg-[#2d3d2e] hover:bg-[#1f2b20] text-white py-2 min-[380px]:py-2.5 px-2.5 min-[380px]:px-4 text-[11.5px] min-[360px]:text-[13px] font-bold transition-all shadow-xs active:scale-98 cursor-pointer"
+            className="flex-1 h-10 min-[380px]:h-10.5 flex items-center justify-center gap-1.5 rounded-md bg-[#2d3d2e] hover:bg-[#1f2b20] text-white px-2.5 min-[380px]:px-4 text-[11.5px] min-[360px]:text-[13px] font-bold transition-all shadow-xs active:scale-98 cursor-pointer whitespace-nowrap"
           >
-            <ShoppingCart className="h-3.5 w-3.5 text-[#a8c99a]" />
+            <ShoppingCart className="h-3.5 w-3.5 shrink-0 text-[#a8c99a]" />
             <span>+ Beli (50g)</span>
           </button>
 
           <button
             onClick={onOpenDetail}
-            className="flex items-center justify-center gap-1.5 rounded-md border border-[#2d3d2e]/20 bg-white/90 hover:bg-white text-[#2d3d2e] py-2 min-[380px]:py-2.5 px-3 min-[380px]:px-4 text-[11.5px] min-[360px]:text-[13px] font-semibold transition-all shadow-2xs cursor-pointer active:scale-98 shrink-0"
+            className="h-10 min-[380px]:h-10.5 flex items-center justify-center gap-1.5 rounded-md border border-[#2d3d2e]/20 bg-white/90 hover:bg-white text-[#2d3d2e] px-3 min-[380px]:px-4 text-[11.5px] min-[360px]:text-[13px] font-semibold transition-all shadow-2xs cursor-pointer active:scale-98 shrink-0 whitespace-nowrap"
           >
-            <Info className="h-3.5 w-3.5 text-[#4a5a48]" />
+            <Info className="h-3.5 w-3.5 shrink-0 text-[#4a5a48]" />
             <span>Detail</span>
           </button>
         </div>

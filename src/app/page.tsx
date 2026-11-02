@@ -419,15 +419,22 @@ export default function Home() {
           {/* Parallax Container (controlled by GSAP ScrollTrigger, zero CSS transition interference for instant responsiveness) */}
           <div
             ref={heroBgRef}
-            className="absolute -top-24 -bottom-24 -left-12 -right-12 pointer-events-none will-change-transform"
+            className="absolute -top-24 -bottom-24 -left-12 -right-12 pointer-events-none will-change-transform overflow-hidden"
           >
             {/* Continuous Living / Breathing Ken Burns animation */}
-            <div
-              className="w-full h-full bg-cover bg-center animate-hero-live"
-              style={{
-                backgroundImage: `linear-gradient(to bottom, rgba(20,35,20,0.1) 0%, rgba(20,35,20,0.0) 25%, rgba(15,25,15,0.65) 70%, rgba(10,20,10,0.92) 100%), url('/hero-bg.jpeg')`,
-              }}
-            />
+            <div className="relative w-full h-full animate-hero-live">
+              <Image
+                src="/hero-bg.jpeg"
+                alt="Kebun Teh Alami Verdantea"
+                fill
+                priority
+                quality={80}
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+              {/* Cinematic Vignette Overlay */}
+              <div className="absolute inset-0 bg-linear-to-b from-[rgba(20,35,20,0.1)] via-[rgba(15,25,15,0.6)] to-[rgba(10,20,10,0.92)]" />
+            </div>
           </div>
 
           {/* Noise overlay */}
@@ -469,24 +476,24 @@ export default function Home() {
             {/* Spacious, balanced and aesthetic CTA buttons */}
             <div
               className={`transition-all duration-700 delay-500 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                } flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto`}
+                } flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full max-w-xs sm:max-w-none mx-auto`}
             >
-              <MagneticWrapper>
+              <MagneticWrapper className="w-full sm:w-auto flex justify-center">
                 <button
                   onClick={() => scrollToSection("product-showcase")}
-                  className="w-full sm:w-auto min-w-36 min-[360px]:min-w-44 sm:min-w-54 cursor-pointer rounded-lg bg-white px-4 min-[360px]:px-6 sm:px-8 py-3 min-[360px]:py-3.5 sm:py-4 text-[13.5px] min-[360px]:text-[14.5px] sm:text-[16px] font-semibold tracking-[-0.2px] text-[#1c2a1d] shadow-[0_8px_30px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
+                  className="h-11 sm:h-12 w-full sm:w-auto min-w-44 sm:min-w-52 cursor-pointer rounded-lg bg-white px-6 sm:px-8 text-[14px] sm:text-[15px] font-semibold text-[#1c2a1d] shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/95 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   <span>Lihat Produk</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </button>
               </MagneticWrapper>
 
-              <MagneticWrapper>
+              <MagneticWrapper className="w-full sm:w-auto flex justify-center">
                 <button
                   onClick={() => scrollToSection("ritual-seduh")}
-                  className="w-full sm:w-auto min-w-36 min-[360px]:min-w-44 sm:min-w-54 cursor-pointer rounded-lg border border-white/30 bg-black/35 px-4 min-[360px]:px-6 sm:px-8 py-3 min-[360px]:py-3.5 sm:py-4 text-[13.5px] min-[360px]:text-[14.5px] sm:text-[16px] font-medium text-white transition-all duration-300 hover:bg-black/50 hover:border-white/50 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-95 shadow-[0_8px_30px_rgba(0,0,0,0.25)]"
+                  className="h-11 sm:h-12 w-full sm:w-auto min-w-44 sm:min-w-52 cursor-pointer rounded-lg border border-white/35 bg-white/10 hover:bg-white/20 text-white px-6 sm:px-8 text-[14px] sm:text-[15px] font-semibold transition-all duration-300 hover:border-white/55 hover:-translate-y-0.5 active:scale-95 shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center justify-center whitespace-nowrap"
                 >
-                  Ritual Seduh
+                  <span>Ritual Seduh</span>
                 </button>
               </MagneticWrapper>
             </div>
@@ -638,6 +645,7 @@ export default function Home() {
                     src="/jasmine.jpeg"
                     alt="Tekstur Daun Teh Giok Utuh"
                     fill
+                    quality={80}
                     className="object-cover opacity-75"
                     sizes="(max-width: 768px) 100vw, 540px"
                   />
@@ -675,6 +683,7 @@ export default function Home() {
                     src="/hojicha.jpeg"
                     alt="Seduhan Teh Hijau Alami pada Cangkir Tradisional"
                     fill
+                    quality={80}
                     className="object-cover opacity-80"
                     sizes="(max-width: 768px) 100vw, 540px"
                   />
@@ -790,19 +799,20 @@ export default function Home() {
                     <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                       <button
                         onClick={() => quickAddToCart(PRODUCTS_DATA[0])}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 rounded-md bg-[#2d3d2e] hover:bg-[#1f2b20] text-white px-2.5 min-[360px]:px-5 py-2 min-[360px]:py-2.5 text-[11px] min-[360px]:text-[12.5px] font-bold transition-all shadow-xs cursor-pointer active:scale-98"
+                        className="flex-1 sm:flex-none h-10.5 sm:h-11 flex items-center justify-center gap-1.5 sm:gap-2 rounded-md bg-[#2d3d2e] hover:bg-[#1f2b20] text-white px-3 sm:px-5 text-xs min-[360px]:text-[12.5px] font-bold transition-all shadow-xs cursor-pointer active:scale-98 whitespace-nowrap"
                       >
-                        <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#a8c99a]" />
-                        <span>+ Beli ({formatRp(PRODUCTS_DATA[0].price)})</span>
+                        <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-[#a8c99a]" />
+                        <span className="inline min-[400px]:hidden">+ Beli (15k)</span>
+                        <span className="hidden min-[400px]:inline">+ Beli ({formatRp(PRODUCTS_DATA[0].price)})</span>
                       </button>
 
                       <button
                         onClick={() => openProductDetail(PRODUCTS_DATA[0])}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-md border border-[#2d3d2e]/25 bg-white/90 hover:bg-white text-[#2d3d2e] px-2 min-[360px]:px-4 py-2 min-[360px]:py-2.5 text-[11px] min-[360px]:text-[12.5px] font-semibold transition-all shadow-2xs cursor-pointer shrink-0"
+                        className="flex-1 sm:flex-none h-10.5 sm:h-11 flex items-center justify-center gap-1.5 rounded-md border border-[#2d3d2e]/25 bg-white/90 hover:bg-white text-[#2d3d2e] px-3 sm:px-4 text-xs min-[360px]:text-[12.5px] font-semibold transition-all shadow-2xs cursor-pointer active:scale-98 whitespace-nowrap"
                       >
                         <span>Detail</span>
-                        <span className="hidden min-[360px]:inline"> Spesifikasi</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
+                        <span className="hidden min-[380px]:inline"> Spesifikasi</span>
+                        <ArrowRight className="h-3.5 w-3.5 shrink-0" />
                       </button>
                     </div>
                   </div>
@@ -824,6 +834,8 @@ export default function Home() {
                       src="/foto-produk.jpeg"
                       alt="Verdantea Pure Green Tea 50g"
                       fill
+                      quality={80}
+                      loading="lazy"
                       className="object-cover"
                       sizes="90px"
                     />
@@ -845,35 +857,35 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Direct Action Links & Quick Buy */}
-                <div className="flex flex-wrap items-center gap-2 min-[360px]:gap-3 sm:gap-4 text-xs min-[360px]:text-[13px] w-full md:w-auto">
+                {/* Direct Action Links & Quick Buy - Clean 2x2 on mobile, row on desktop */}
+                <div className="grid grid-cols-2 md:flex md:items-center gap-2 md:gap-3 w-full md:w-auto text-xs min-[360px]:text-[13px]">
                   <button
                     onClick={() => scrollToSection("product-showcase")}
-                    className="flex-1 sm:flex-none text-center rounded-md border border-white/15 bg-white/5 hover:bg-white/10 px-2.5 min-[360px]:px-3.5 py-1.5 min-[360px]:py-2 text-white/85 hover:text-white transition-all cursor-pointer"
+                    className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center rounded-md border border-white/15 bg-white/5 hover:bg-white/10 text-white/85 hover:text-white transition-all whitespace-nowrap cursor-pointer"
                   >
-                    Kisah Daun
+                    <span>Kisah Daun</span>
                   </button>
                   <button
                     onClick={() => scrollToSection("ritual-seduh")}
-                    className="flex-1 sm:flex-none text-center rounded-md border border-white/15 bg-white/5 hover:bg-white/10 px-2.5 min-[360px]:px-3.5 py-1.5 min-[360px]:py-2 text-white/85 hover:text-white transition-all cursor-pointer"
+                    className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center rounded-md border border-white/15 bg-white/5 hover:bg-white/10 text-white/85 hover:text-white transition-all whitespace-nowrap cursor-pointer"
                   >
-                    Ritual Seduh
+                    <span>Ritual Seduh</span>
                   </button>
                   <button
                     onClick={() => quickAddToCart(PRODUCTS_DATA[0])}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-md bg-[#6b8f5e] hover:bg-[#7ba36e] text-white px-2.5 min-[360px]:px-4 py-1.5 min-[360px]:py-2 font-bold transition-all shadow-xs cursor-pointer active:scale-98"
+                    className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center gap-1.5 rounded-md bg-[#6b8f5e] hover:bg-[#7ba36e] text-white font-bold transition-all shadow-xs whitespace-nowrap cursor-pointer active:scale-98"
                   >
-                    <ShoppingCart className="h-3.5 w-3.5" />
+                    <ShoppingCart className="h-3.5 w-3.5 shrink-0" />
                     <span>+ Beli (15k)</span>
                   </button>
                   <a
                     href="https://wa.me/62895338558400?text=Halo%20Verdantea!%20Saya%20ingin%20konsultasi%20mengenai%20produk%20teh."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-md border border-[#25d366]/40 bg-[#25d366]/10 hover:bg-[#25d366]/20 text-[#a8c99a] px-2.5 min-[360px]:px-3.5 py-1.5 min-[360px]:py-2 font-medium transition-all"
+                    className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center gap-1.5 rounded-md border border-[#25d366]/40 bg-[#25d366]/10 hover:bg-[#25d366]/20 text-[#a8c99a] font-medium transition-all whitespace-nowrap"
                   >
                     <span>WhatsApp</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
                   </a>
                 </div>
               </div>
@@ -1163,6 +1175,7 @@ export default function Home() {
                       src={selectedProduct.image}
                       alt={selectedProduct.name}
                       fill
+                      quality={85}
                       className="object-cover"
                       sizes="(max-width: 640px) 100vw, 400px"
                     />
