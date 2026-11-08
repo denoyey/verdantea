@@ -35,7 +35,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RevealOnScroll } from "@/components/animated/RevealOnScroll";
 import { MagneticWrapper } from "@/components/animated/MagneticWrapper";
 import { LivingTeaChamber } from "@/components/animated/LivingTeaChamber";
 import { ArtisanalReviews } from "@/components/artisanal/ArtisanalReviews";
@@ -105,9 +104,9 @@ interface CartItem {
 
 export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
   const heroBgRef = useRef<HTMLDivElement | null>(null);
+  const pageRef = useRef<HTMLDivElement | null>(null);
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -125,19 +124,20 @@ export default function Home() {
 
   // Load cart from localStorage
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-      try {
-        const saved = localStorage.getItem("verdantea_cart_v2");
-        if (saved) {
+    let timer: NodeJS.Timeout;
+    try {
+      const saved = localStorage.getItem("verdantea_cart_v2");
+      if (saved) {
+        timer = setTimeout(() => {
           setCart(JSON.parse(saved));
-        }
-      } catch {
-        // ignore
+        }, 0);
       }
-    }, 0);
-
-    return () => clearTimeout(timer);
+    } catch {
+      // ignore
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   // Track scroll position to transition into Sticky Luxury Header (throttled with rAF for 120fps smoothness)
@@ -157,28 +157,261 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // GSAP Parallax depth effect on hero background
-  // Active on desktop/tablet (>= 768px). On mobile, native hardware scrolling is preserved to eliminate stutter/freezing.
+  // Master GSAP ScrollTrigger & Entrance Animation Context
+  // Synchronized with Lenis smooth scroll and mobile-optimized
   useEffect(() => {
-    if (!heroBgRef.current) return;
+    if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
-    const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 768px)", () => {
-      if (!heroBgRef.current) return;
-      gsap.to(heroBgRef.current, {
-        yPercent: 14,
-        ease: "none",
+    const ctx = gsap.context(() => {
+      // 1. Hero Entrance Timeline (cinematic & fluid)
+      const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+      heroTl
+        .from(".hero-badge", {
+          opacity: 0,
+          y: -16,
+          duration: 0.8,
+          delay: 0.1,
+          clearProps: "opacity,transform",
+        })
+        .from(
+          ".hero-title",
+          {
+            opacity: 0,
+            y: 32,
+            duration: 0.95,
+            ease: "power3.out",
+            clearProps: "opacity,transform",
+          },
+          "-=0.55"
+        )
+        .from(
+          ".hero-desc",
+          {
+            opacity: 0,
+            y: 20,
+            duration: 0.8,
+            clearProps: "opacity,transform",
+          },
+          "-=0.6"
+        )
+        .from(
+          ".hero-cta-btn",
+          {
+            opacity: 0,
+            y: 18,
+            stagger: 0.12,
+            duration: 0.7,
+            clearProps: "opacity,transform",
+          },
+          "-=0.5"
+        )
+        .from(
+          ".hero-scroll-btn",
+          {
+            opacity: 0,
+            duration: 0.8,
+            clearProps: "opacity",
+          },
+          "-=0.3"
+        );
+
+      // 2. Section: First Part Header Strip
+      gsap.from(".showcase-header-strip", {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
         scrollTrigger: {
-          trigger: "#hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.6,
+          trigger: ".showcase-header-strip",
+          start: "top 88%",
+          once: true,
         },
       });
-    });
 
-    return () => mm.revert();
+      // 3. Section: Tier 1 Showcase Chamber Card
+      gsap.from(".tier1-chamber-card", {
+        opacity: 0,
+        y: 28,
+        scale: 0.97,
+        duration: 0.85,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".tier1-showcase-container",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      // 4. Section: Tier 1 2x2 Artisanal Matrix (4 cells staggered)
+      gsap.from(".artisanal-matrix-cell", {
+        opacity: 0,
+        y: 26,
+        duration: 0.75,
+        stagger: 0.1,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".artisanal-matrix-grid",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      // 5. Section: Tier 2 Dual-Panel (Left: Anatomi Pucuk, Right: Pure Brewed Liquor)
+      gsap.from(".tier2-panel", {
+        opacity: 0,
+        y: 30,
+        duration: 0.85,
+        stagger: 0.14,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".tier2-grid",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      // 6. Section: Sommelier Brewing Ritual
+      gsap.from(".sommelier-header", {
+        opacity: 0,
+        y: 22,
+        duration: 0.8,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: "#ritual-seduh",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      gsap.from(".sommelier-step-card", {
+        opacity: 0,
+        y: 28,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".sommelier-steps-grid",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      gsap.from(".sommelier-trust-strip", {
+        opacity: 0,
+        y: 18,
+        duration: 0.7,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".sommelier-trust-strip",
+          start: "top 92%",
+          once: true,
+        },
+      });
+
+      // 7. Section: Footer
+      gsap.from(".footer-top-row", {
+        opacity: 0,
+        y: 24,
+        duration: 0.8,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".footer-top-row",
+          start: "top 88%",
+          once: true,
+        },
+      });
+
+      gsap.from(".footer-monumental-text", {
+        opacity: 0,
+        scale: 0.94,
+        duration: 1.1,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".footer-monumental-container",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      gsap.from(".footer-bottom-strip", {
+        opacity: 0,
+        y: 14,
+        duration: 0.6,
+        ease: "power2.out",
+        clearProps: "opacity,transform",
+        scrollTrigger: {
+          trigger: ".footer-bottom-strip",
+          start: "top 95%",
+          once: true,
+        },
+      });
+
+      // 8. Desktop-Only Parallax & Kinesthetic Depth (min-width: 768px)
+      // Keeps mobile 100% fluid and prevents any scroll stutter
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px)", () => {
+        // Hero Background Parallax
+        if (heroBgRef.current) {
+          gsap.to(heroBgRef.current, {
+            yPercent: 14,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.6,
+            },
+          });
+        }
+
+        // Tier 2 Images Subtle Depth Parallax
+        gsap.to(".tier2-image-left", {
+          yPercent: 10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".tier2-grid",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.8,
+          },
+        });
+
+        gsap.to(".tier2-image-right", {
+          yPercent: 10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".tier2-grid",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.8,
+          },
+        });
+
+        // Footer Monumental Text Subtle Drift
+        gsap.to(".footer-monumental-text", {
+          xPercent: -3,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".footer-monumental-container",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+        });
+      });
+    }, pageRef);
+
+    return () => ctx.revert();
   }, []);
 
 
@@ -327,7 +560,7 @@ export default function Home() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="relative min-h-screen bg-[#e8e0d0] text-[#1a2218] font-sans selection:bg-[#6b8f5e] selection:text-white">
+      <div ref={pageRef} className="relative min-h-screen bg-[#e8e0d0] text-[#1a2218] font-sans selection:bg-[#6b8f5e] selection:text-white">
         {/* ==================== GLOBAL STICKY LUXURY HEADER (AESOP/APPLE STYLE) ==================== */}
         <header
           className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolledPastHero
@@ -472,8 +705,7 @@ export default function Home() {
           {/* Hero content - Centered Vertically with Spacious, Aesthetic Layout */}
           <div className="relative z-10 w-full max-w-230 px-1 min-[360px]:px-3 sm:px-8 text-center text-white my-auto pt-10 min-[360px]:pt-14 sm:pt-16 pb-8 sm:pb-8">
             <div
-              className={`transition-all duration-700 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                } mb-3 min-[360px]:mb-4 sm:mb-6 inline-flex items-center rounded-md border border-white/20 bg-black/40 px-3 min-[360px]:px-4 sm:px-5 py-1 sm:py-1.5 shadow-sm`}
+              className="hero-badge mb-3 min-[360px]:mb-4 sm:mb-6 inline-flex items-center rounded-md border border-white/20 bg-black/40 px-3 min-[360px]:px-4 sm:px-5 py-1 sm:py-1.5 shadow-sm will-change-transform"
             >
               <span className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-[12px] font-semibold uppercase tracking-[1.5px] min-[360px]:tracking-[2.5px] sm:tracking-[3px] text-white/90">
                 Pure · Natural · Artisan
@@ -481,15 +713,13 @@ export default function Home() {
             </div>
 
             <h1
-              className={`transition-all duration-800 delay-150 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                } mb-3 min-[360px]:mb-4 sm:mb-6 text-[clamp(28px,8.5vw,76px)] font-bold leading-[1.08] tracking-[-1px] min-[360px]:tracking-[-1.5px] sm:tracking-[-2.5px] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.4)]`}
+              className="hero-title mb-3 min-[360px]:mb-4 sm:mb-6 text-[clamp(28px,8.5vw,76px)] font-bold leading-[1.08] tracking-[-1px] min-[360px]:tracking-[-1.5px] sm:tracking-[-2.5px] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.4)] will-change-transform"
             >
               welcome to verdantea
             </h1>
 
             <p
-              className={`transition-all duration-700 delay-300 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                } mx-auto max-w-185 sm:max-w-195 mb-5 min-[360px]:mb-7 sm:mb-10 text-[13px] min-[360px]:text-[14.5px] sm:text-[18px] font-normal leading-[1.6] sm:leading-[1.7] text-white/85 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.3)]`}
+              className="hero-desc mx-auto max-w-185 sm:max-w-195 mb-5 min-[360px]:mb-7 sm:mb-10 text-[13px] min-[360px]:text-[14.5px] sm:text-[18px] font-normal leading-[1.6] sm:leading-[1.7] text-white/85 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.3)] will-change-transform"
             >
               verdantea hadir sebagai bagian dari gaya hidup mindful
               <br className="hidden sm:inline" />
@@ -498,27 +728,30 @@ export default function Home() {
 
             {/* Spacious, balanced and aesthetic CTA buttons */}
             <div
-              className={`transition-all duration-700 delay-500 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                } flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full max-w-xs sm:max-w-none mx-auto`}
+              className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full max-w-xs sm:max-w-none mx-auto"
             >
-              <MagneticWrapper className="w-full sm:w-auto flex justify-center">
-                <button
-                  onClick={() => scrollToSection("product-showcase")}
-                  className="h-11 sm:h-12 w-full sm:w-auto min-w-44 sm:min-w-52 cursor-pointer rounded-lg bg-white px-6 sm:px-8 text-[14px] sm:text-[15px] font-semibold text-[#1c2a1d] shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/95 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap"
-                >
-                  <span>Lihat Produk</span>
-                  <ArrowRight className="h-4 w-4 shrink-0" />
-                </button>
-              </MagneticWrapper>
+              <div className="hero-cta-btn w-full sm:w-auto flex justify-center will-change-transform">
+                <MagneticWrapper className="w-full sm:w-auto flex justify-center">
+                  <button
+                    onClick={() => scrollToSection("product-showcase")}
+                    className="h-11 sm:h-12 w-full sm:w-auto min-w-44 sm:min-w-52 cursor-pointer rounded-lg bg-white px-6 sm:px-8 text-[14px] sm:text-[15px] font-semibold text-[#1c2a1d] shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/95 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap"
+                  >
+                    <span>Lihat Produk</span>
+                    <ArrowRight className="h-4 w-4 shrink-0" />
+                  </button>
+                </MagneticWrapper>
+              </div>
 
-              <MagneticWrapper className="w-full sm:w-auto flex justify-center">
-                <button
-                  onClick={() => scrollToSection("ritual-seduh")}
-                  className="h-11 sm:h-12 w-full sm:w-auto min-w-44 sm:min-w-52 cursor-pointer rounded-lg border border-white/35 bg-white/10 hover:bg-white/20 text-white px-6 sm:px-8 text-[14px] sm:text-[15px] font-semibold transition-all duration-300 hover:border-white/55 hover:-translate-y-0.5 active:scale-95 shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center justify-center whitespace-nowrap"
-                >
-                  <span>Ritual Seduh</span>
-                </button>
-              </MagneticWrapper>
+              <div className="hero-cta-btn w-full sm:w-auto flex justify-center will-change-transform">
+                <MagneticWrapper className="w-full sm:w-auto flex justify-center">
+                  <button
+                    onClick={() => scrollToSection("ritual-seduh")}
+                    className="h-11 sm:h-12 w-full sm:w-auto min-w-44 sm:min-w-52 cursor-pointer rounded-lg border border-white/35 bg-white/10 hover:bg-white/20 text-white px-6 sm:px-8 text-[14px] sm:text-[15px] font-semibold transition-all duration-300 hover:border-white/55 hover:-translate-y-0.5 active:scale-95 shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex items-center justify-center whitespace-nowrap"
+                  >
+                    <span>Ritual Seduh</span>
+                  </button>
+                </MagneticWrapper>
+              </div>
             </div>
           </div>
 
@@ -527,7 +760,7 @@ export default function Home() {
             type="button"
             onClick={() => scrollToSection("product-showcase")}
             aria-label="Scroll ke konten utama"
-            className="group absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center justify-center gap-2 text-white/70 transition-all duration-300 hover:text-white cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            className="hero-scroll-btn group absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center justify-center gap-2 text-white/70 transition-all duration-300 hover:text-white cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           >
             <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-md border border-white/25 bg-black/40 shadow-md transition-all duration-300 group-hover:scale-105 group-hover:border-white/45 group-hover:bg-black/60">
               <svg
@@ -549,130 +782,131 @@ export default function Home() {
         <main id="main" className="relative bg-[#e8e0d0] min-h-screen">
           {/* ==================== EDITORIAL SHOWCASE (FIRST PART) ==================== */}
           <section id="product-showcase" className="mx-auto max-w-7xl px-2.5 min-[360px]:px-4 sm:px-6 lg:px-8 pt-8 min-[360px]:pt-10 pb-4">
-            <RevealOnScroll y={20}>
-              {/* Header strip: FIRST PART | ORGANIC GREEN TEA | SINGLE ORIGIN */}
-              <div className="flex items-center justify-between border-b border-[#2d3d2e]/15 pb-2 min-[360px]:pb-2.5 sm:pb-3 mb-3.5 sm:mb-6 text-[#4a5a48] gap-1">
-                <span className="text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-bold tracking-wider min-[360px]:tracking-[0.2em] sm:tracking-[0.25em] text-[#2d3d2e]/80 uppercase shrink-0">
-                  FIRST PART
-                </span>
-                <div className="rounded-md border border-[#2d3d2e]/40 px-2 min-[360px]:px-2.5 sm:px-3.5 py-0.5 sm:py-1 text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-bold tracking-wider min-[360px]:tracking-[0.15em] sm:tracking-[0.2em] text-[#2d3d2e] uppercase bg-[#f5f0e6] shadow-xs text-center truncate">
-                  ORGANIC GREEN TEA
-                </div>
-                <span className="text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-mono font-medium tracking-wide min-[360px]:tracking-[0.12em] sm:tracking-[0.15em] text-[#4a5a48] uppercase shrink-0">
-                  SINGLE ORIGIN
-                </span>
+            {/* Header strip: FIRST PART | ORGANIC GREEN TEA | SINGLE ORIGIN */}
+            <div className="showcase-header-strip flex items-center justify-between border-b border-[#2d3d2e]/15 pb-2 min-[360px]:pb-2.5 sm:pb-3 mb-3.5 sm:mb-6 text-[#4a5a48] gap-1 will-change-transform">
+              <span className="text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-bold tracking-wider min-[360px]:tracking-[0.2em] sm:tracking-[0.25em] text-[#2d3d2e]/80 uppercase shrink-0">
+                FIRST PART
+              </span>
+              <div className="rounded-md border border-[#2d3d2e]/40 px-2 min-[360px]:px-2.5 sm:px-3.5 py-0.5 sm:py-1 text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-bold tracking-wider min-[360px]:tracking-[0.15em] sm:tracking-[0.2em] text-[#2d3d2e] uppercase bg-[#f5f0e6] shadow-xs text-center truncate">
+                ORGANIC GREEN TEA
               </div>
+              <span className="text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-mono font-medium tracking-wide min-[360px]:tracking-[0.12em] sm:tracking-[0.15em] text-[#4a5a48] uppercase shrink-0">
+                SINGLE ORIGIN
+              </span>
+            </div>
 
-              {/* TIER 1: POUCH SHOWCASE & 2x2 ARTISANAL CRAFT MATRIX (FULL & BALANCED) */}
-              <div className="rounded-lg border border-black/8 bg-[#efe8dc] p-2.5 min-[360px]:p-3.5 sm:p-7 lg:p-8 mb-5 shadow-xs">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-stretch">
-                  {/* Left: Product Showcase Card */}
-                  <div className="lg:col-span-5 flex flex-col justify-between h-full w-full max-w-xl mx-auto lg:max-w-none">
-                    <LivingTeaChamber
-                      onQuickAdd={() => quickAddToCart(PRODUCTS_DATA[0])}
-                      onOpenDetail={() => openProductDetail(PRODUCTS_DATA[0])}
-                      onReviewClick={() => scrollToSection("ulasan")}
-                      priceFormatted={formatRp(PRODUCTS_DATA[0].price)}
-                    />
+            {/* TIER 1: POUCH SHOWCASE & 2x2 ARTISANAL CRAFT MATRIX (FULL & BALANCED) */}
+            <div className="tier1-showcase-container rounded-lg border border-black/8 bg-[#efe8dc] p-2.5 min-[360px]:p-3.5 sm:p-7 lg:p-8 mb-5 shadow-xs">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-stretch">
+                {/* Left: Product Showcase Card */}
+                <div className="tier1-chamber-card lg:col-span-5 flex flex-col justify-between h-full w-full max-w-xl mx-auto lg:max-w-none will-change-transform">
+                  <LivingTeaChamber
+                    onQuickAdd={() => quickAddToCart(PRODUCTS_DATA[0])}
+                    onOpenDetail={() => openProductDetail(PRODUCTS_DATA[0])}
+                    onReviewClick={() => scrollToSection("ulasan")}
+                    priceFormatted={formatRp(PRODUCTS_DATA[0].price)}
+                  />
+                </div>
+
+                {/* Right: 2x2 Artisanal Matrix (Full Height & Balanced) */}
+                <div className="artisanal-matrix-grid lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 min-[360px]:gap-3.5 sm:gap-5 h-full items-stretch w-full max-w-xl mx-auto lg:max-w-none">
+                  {/* Cell 1: Origin Story (CIWIDEY HIGHLAND) */}
+                  <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md border border-black/8 bg-white/80 p-3.5 min-[380px]:p-5 sm:p-6 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs will-change-transform">
+                    <div>
+                      <div className="text-[11px] min-[360px]:text-[12px] font-bold uppercase tracking-wider min-[360px]:tracking-widest text-[#2d3d2e] mb-1.5 min-[360px]:mb-2 flex items-center gap-1.5">
+                        <Leaf className="h-3.5 w-3.5 text-[#5f7a5b]" />
+                        <span>CIWIDEY HIGHLAND</span>
+                      </div>
+                      <p className="text-[11.5px] min-[380px]:text-[12.5px] leading-relaxed text-[#4a5a48]">
+                        Petikan pucuk peko dari lereng vulkanis 1.450 mdpl berselimut kabut alami. Diproses kukus kilat untuk mengunci klorofil murni, katekin, dan antioksidan EGCG tanpa kepahitan.
+                      </p>
+                    </div>
+                    <div className="mt-3 min-[360px]:mt-4 pt-2.5 min-[360px]:pt-3 border-t border-black/6 text-[9.5px] min-[360px]:text-[10.5px] font-mono text-[#5f7a5b] uppercase tracking-wider font-semibold">
+                      ELEVASI 1.450 MDPL • SINGLE ORIGIN
+                    </div>
                   </div>
 
-                  {/* Right: 2x2 Artisanal Matrix (Full Height & Balanced) */}
-                  <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 min-[360px]:gap-3.5 sm:gap-5 h-full items-stretch w-full max-w-xl mx-auto lg:max-w-none">
-                    {/* Cell 1: Origin Story (CIWIDEY HIGHLAND) */}
-                    <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md border border-black/8 bg-white/80 p-3.5 min-[380px]:p-5 sm:p-6 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs">
-                      <div>
-                        <div className="text-[11px] min-[360px]:text-[12px] font-bold uppercase tracking-wider min-[360px]:tracking-widest text-[#2d3d2e] mb-1.5 min-[360px]:mb-2 flex items-center gap-1.5">
-                          <Leaf className="h-3.5 w-3.5 text-[#5f7a5b]" />
-                          <span>CIWIDEY HIGHLAND</span>
-                        </div>
-                        <p className="text-[11.5px] min-[380px]:text-[12.5px] leading-relaxed text-[#4a5a48]">
-                          Petikan pucuk peko dari lereng vulkanis 1.450 mdpl berselimut kabut alami. Diproses kukus kilat untuk mengunci klorofil murni, katekin, dan antioksidan EGCG tanpa kepahitan.
-                        </p>
-                      </div>
-                      <div className="mt-3 min-[360px]:mt-4 pt-2.5 min-[360px]:pt-3 border-t border-black/6 text-[9.5px] min-[360px]:text-[10.5px] font-mono text-[#5f7a5b] uppercase tracking-wider font-semibold">
-                        ELEVASI 1.450 MDPL • SINGLE ORIGIN
-                      </div>
+                  {/* Cell 2: Sage Green Badge Tile */}
+                  <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md bg-[#547350] text-white p-3.5 min-[380px]:p-5 sm:p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-sm will-change-transform">
+                    <div className="flex items-center justify-between mb-2.5 min-[360px]:mb-3">
+                      <span className="text-[9px] min-[360px]:text-[10px] font-mono tracking-wider min-[360px]:tracking-widest uppercase text-white/80 bg-white/15 px-2 min-[360px]:px-2.5 py-0.5 min-[360px]:py-1 rounded-md">
+                        PANEN PERDANA
+                      </span>
+                      <Sparkles className="h-3.5 w-3.5 min-[360px]:h-4 min-[360px]:w-4 text-white" />
                     </div>
-
-                    {/* Cell 2: Sage Green Badge Tile */}
-                    <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md bg-[#547350] text-white p-3.5 min-[380px]:p-5 sm:p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-sm">
-                      <div className="flex items-center justify-between mb-2.5 min-[360px]:mb-3">
-                        <span className="text-[9px] min-[360px]:text-[10px] font-mono tracking-wider min-[360px]:tracking-widest uppercase text-white/80 bg-white/15 px-2 min-[360px]:px-2.5 py-0.5 min-[360px]:py-1 rounded-md">
-                          PANEN PERDANA
-                        </span>
-                        <Sparkles className="h-3.5 w-3.5 min-[360px]:h-4 min-[360px]:w-4 text-white" />
+                    <div>
+                      <div className="text-[15px] min-[360px]:text-[16px] sm:text-[18px] font-serif font-bold tracking-tight">
+                        First Flush 2026
                       </div>
-                      <div>
-                        <div className="text-[15px] min-[360px]:text-[16px] sm:text-[18px] font-serif font-bold tracking-tight">
-                          First Flush 2026
-                        </div>
-                        <p className="text-[11px] min-[360px]:text-[12px] text-white/85 leading-relaxed mt-1">
-                          Hanya memetik 2 pucuk daun teratas saat embun fajar masih membasahi kebun, mengunci asam amino L-theanine manis alami.
-                        </p>
-                      </div>
-                      <div className="mt-3 min-[360px]:mt-4 pt-2 text-[9.5px] min-[360px]:text-[10.5px] text-white/70 font-mono tracking-wide">
-                        Petikan Embun Fajar Terpilih
-                      </div>
+                      <p className="text-[11px] min-[360px]:text-[12px] text-white/85 leading-relaxed mt-1">
+                        Hanya memetik 2 pucuk daun teratas saat embun fajar masih membasahi kebun, mengunci asam amino L-theanine manis alami.
+                      </p>
                     </div>
-
-                    {/* Cell 3: Forest Green Badge Tile */}
-                    <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md bg-[#1f2d20] text-white p-3.5 min-[380px]:p-5 sm:p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-sm">
-                      <div className="flex items-center justify-between mb-2.5 min-[360px]:mb-3">
-                        <span className="text-[9px] min-[360px]:text-[10px] font-mono tracking-wider min-[360px]:tracking-widest uppercase text-[#a8c99a] bg-white/10 px-2 min-[360px]:px-2.5 py-0.5 min-[360px]:py-1 rounded-md">
-                          GRADE 1 UTUH
-                        </span>
-                        <Award className="h-3.5 w-3.5 min-[360px]:h-4 min-[360px]:w-4 text-[#a8c99a]" />
-                      </div>
-                      <div>
-                        <div className="text-[15px] min-[360px]:text-[16px] sm:text-[18px] font-serif font-bold tracking-tight text-[#a8c99a]">
-                          100% Pucuk Murni
-                        </div>
-                        <p className="text-[11px] min-[360px]:text-[12px] text-white/80 leading-relaxed mt-1">
-                          Bebas pestisida kimia sintetis & bahan perisa buatan. Daun teh disortir secara teliti agar ukuran dan kemurnian tetap prima.
-                        </p>
-                      </div>
-                      <div className="mt-3 min-[360px]:mt-4 pt-2 text-[9.5px] min-[360px]:text-[10.5px] text-[#a8c99a]/80 font-mono tracking-wide">
-                        Standar Mutu Artisan Teruji
-                      </div>
+                    <div className="mt-3 min-[360px]:mt-4 pt-2 text-[9.5px] min-[360px]:text-[10.5px] text-white/70 font-mono tracking-wide">
+                      Petikan Embun Fajar Terpilih
                     </div>
+                  </div>
 
-                    {/* Cell 4: Botanical Line Art & Certification */}
-                    <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md border border-black/8 bg-white/80 p-3.5 min-[380px]:p-5 sm:p-6 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-sm">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1.5 min-[360px]:mb-2">
-                          <svg className="w-3.5 h-3.5 min-[360px]:w-4 min-[360px]:h-4 text-[#2d3d2e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 2a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9A9 9 0 0 1 3 11C3 6.03 7.03 2 12 2z" />
-                            <path d="M12 2c0 4.97 4.03 9 9 9" />
-                            <path d="M12 11c0 4.97-4.03 9-9 9" />
-                          </svg>
-                          <div className="text-[11px] min-[360px]:text-[12px] font-bold uppercase tracking-wider text-[#2d3d2e]">
-                            TANPA PENGAWET
-                          </div>
+                  {/* Cell 3: Forest Green Badge Tile */}
+                  <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md bg-[#1f2d20] text-white p-3.5 min-[380px]:p-5 sm:p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-sm will-change-transform">
+                    <div className="flex items-center justify-between mb-2.5 min-[360px]:mb-3">
+                      <span className="text-[9px] min-[360px]:text-[10px] font-mono tracking-wider min-[360px]:tracking-widest uppercase text-[#a8c99a] bg-white/10 px-2 min-[360px]:px-2.5 py-0.5 min-[360px]:py-1 rounded-md">
+                        GRADE 1 UTUH
+                      </span>
+                      <Award className="h-3.5 w-3.5 min-[360px]:h-4 min-[360px]:w-4 text-[#a8c99a]" />
+                    </div>
+                    <div>
+                      <div className="text-[15px] min-[360px]:text-[16px] sm:text-[18px] font-serif font-bold tracking-tight text-[#a8c99a]">
+                        100% Pucuk Murni
+                      </div>
+                      <p className="text-[11px] min-[360px]:text-[12px] text-white/80 leading-relaxed mt-1">
+                        Bebas pestisida kimia sintetis & bahan perisa buatan. Daun teh disortir secara teliti agar ukuran dan kemurnian tetap prima.
+                      </p>
+                    </div>
+                    <div className="mt-3 min-[360px]:mt-4 pt-2 text-[9.5px] min-[360px]:text-[10.5px] text-[#a8c99a]/80 font-mono tracking-wide">
+                      Standar Mutu Artisan Teruji
+                    </div>
+                  </div>
+
+                  {/* Cell 4: Botanical Line Art & Certification */}
+                  <div className="artisanal-matrix-cell flex flex-col justify-between rounded-md border border-black/8 bg-white/80 p-3.5 min-[380px]:p-5 sm:p-6 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-sm will-change-transform">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1.5 min-[360px]:mb-2">
+                        <svg className="w-3.5 h-3.5 min-[360px]:w-4 min-[360px]:h-4 text-[#2d3d2e]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2a9 9 0 0 1 9 9c0 4.97-4.03 9-9 9A9 9 0 0 1 3 11C3 6.03 7.03 2 12 2z" />
+                          <path d="M12 2c0 4.97 4.03 9 9 9" />
+                          <path d="M12 11c0 4.97-4.03 9-9 9" />
+                        </svg>
+                        <div className="text-[11px] min-[360px]:text-[12px] font-bold uppercase tracking-wider text-[#2d3d2e]">
+                          TANPA PENGAWET
                         </div>
-                        <p className="text-[11.5px] min-[380px]:text-[12.5px] leading-relaxed text-[#4a5a48]">
-                          Struktur sel daun peko utuh terjaga berkat metode kukus tradisional asamushi. Daun tidak hancur menjadi serbuk dan dapat diseduh ulang hingga 3 kali seduhan.
-                        </p>
                       </div>
-                      <div className="mt-3 min-[360px]:mt-4 pt-2.5 min-[360px]:pt-3 border-t border-black/6 text-[9.5px] min-[360px]:text-[10.5px] font-mono text-[#4a5a48] uppercase tracking-wider font-semibold">
-                        DISEGEL NITROGEN • KESEGARAN PRIMA
-                      </div>
+                      <p className="text-[11.5px] min-[380px]:text-[12.5px] leading-relaxed text-[#4a5a48]">
+                        Struktur sel daun peko utuh terjaga berkat metode kukus tradisional asamushi. Daun tidak hancur menjadi serbuk dan dapat diseduh ulang hingga 3 kali seduhan.
+                      </p>
+                    </div>
+                    <div className="mt-3 min-[360px]:mt-4 pt-2.5 min-[360px]:pt-3 border-t border-black/6 text-[9.5px] min-[360px]:text-[10.5px] font-mono text-[#4a5a48] uppercase tracking-wider font-semibold">
+                      DISEGEL NITROGEN • KESEGARAN PRIMA
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
               {/* TIER 2: SPLIT 50/50 DUAL-PANEL (AUTHENTIC HUMAN EDITORIAL CRAFT) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5 mb-5">
+              <div className="tier2-grid grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5 mb-5">
                 {/* Left Panel: Whole Leaf Texture & Terroir Provenance */}
-                <div className="tier2-panel relative rounded-lg overflow-hidden border border-black/8 min-h-72 min-[380px]:min-h-80 sm:min-h-90 flex flex-col justify-between p-3.5 min-[380px]:p-6 sm:p-7 bg-[#1c1a17] shadow-xs">
-                  <Image
-                    src="/jasmine.jpeg"
-                    alt="Tekstur Daun Teh Giok Utuh"
-                    fill
-                    quality={80}
-                    className="object-cover opacity-75"
-                    sizes="(max-width: 768px) 100vw, 540px"
-                  />
+                <div className="tier2-panel relative rounded-lg overflow-hidden border border-black/8 min-h-72 min-[380px]:min-h-80 sm:min-h-90 flex flex-col justify-between p-3.5 min-[380px]:p-6 sm:p-7 bg-[#1c1a17] shadow-xs will-change-transform">
+                  <div className="absolute -top-8 -bottom-8 left-0 right-0 overflow-hidden pointer-events-none">
+                    <Image
+                      src="/jasmine.jpeg"
+                      alt="Tekstur Daun Teh Giok Utuh"
+                      fill
+                      quality={80}
+                      className="tier2-image-left object-cover opacity-75 will-change-transform"
+                      sizes="(max-width: 768px) 100vw, 540px"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/45 to-black/35 pointer-events-none" />
 
                   <div className="relative z-10 flex items-center justify-between gap-1">
@@ -702,15 +936,17 @@ export default function Home() {
                 </div>
 
                 {/* Right Panel: Pure Brewed Liquor - Authentic Tea Photography */}
-                <div className="tier2-panel relative rounded-lg overflow-hidden border border-black/8 min-h-72 min-[380px]:min-h-80 sm:min-h-90 flex flex-col justify-between p-3.5 min-[380px]:p-6 sm:p-7 bg-[#7c5338] text-white shadow-xs">
-                  <Image
-                    src="/hojicha.jpeg"
-                    alt="Seduhan Teh Hijau Alami pada Cangkir Tradisional"
-                    fill
-                    quality={80}
-                    className="object-cover opacity-80"
-                    sizes="(max-width: 768px) 100vw, 540px"
-                  />
+                <div className="tier2-panel relative rounded-lg overflow-hidden border border-black/8 min-h-72 min-[380px]:min-h-80 sm:min-h-90 flex flex-col justify-between p-3.5 min-[380px]:p-6 sm:p-7 bg-[#7c5338] text-white shadow-xs will-change-transform">
+                  <div className="absolute -top-8 -bottom-8 left-0 right-0 overflow-hidden pointer-events-none">
+                    <Image
+                      src="/hojicha.jpeg"
+                      alt="Seduhan Teh Hijau Alami pada Cangkir Tradisional"
+                      fill
+                      quality={80}
+                      className="tier2-image-right object-cover opacity-80 will-change-transform"
+                      sizes="(max-width: 768px) 100vw, 540px"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-black/30 pointer-events-none" />
 
                   <div className="relative z-10 flex items-center justify-between gap-1">
@@ -737,7 +973,7 @@ export default function Home() {
               <div id="ritual-seduh" className="relative rounded-lg overflow-hidden border border-black/8 bg-[#efe8dc] p-3.5 min-[380px]:p-6 sm:p-9 shadow-xs">
                 <div className="relative z-10 max-w-4xl mx-auto">
                   {/* Header */}
-                  <div className="text-center mb-5 sm:mb-7">
+                  <div className="sommelier-header text-center mb-5 sm:mb-7 will-change-transform">
                     <div className="inline-flex items-center gap-1.5 rounded-md bg-[#253927] border border-white/10 px-2.5 min-[360px]:px-3 py-1 text-[9.5px] min-[360px]:text-[10.5px] font-bold tracking-wider min-[360px]:tracking-widest text-[#a8c99a] uppercase shadow-xs mb-2.5 min-[360px]:mb-3">
                       <Leaf className="h-3 w-3 text-[#a8c99a]" />
                       <span>RITUAL SEDUH SOMMELIER</span>
@@ -751,9 +987,9 @@ export default function Home() {
                   </div>
 
                   {/* 3 Human Sommelier Steps Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 min-[360px]:gap-4 mb-5 sm:mb-7">
+                  <div className="sommelier-steps-grid grid grid-cols-1 sm:grid-cols-3 gap-3 min-[360px]:gap-4 mb-5 sm:mb-7">
                     {/* Step 1 */}
-                    <div className="rounded-md border border-black/6 bg-white/80 p-3 min-[360px]:p-4.5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs">
+                    <div className="sommelier-step-card rounded-md border border-black/6 bg-white/80 p-3 min-[360px]:p-4.5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs will-change-transform">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-mono text-[10px] min-[360px]:text-[11px] font-bold text-[#5f7a5b] tracking-wider uppercase">
                           LANGKAH 01
@@ -771,7 +1007,7 @@ export default function Home() {
                     </div>
 
                     {/* Step 2 */}
-                    <div className="rounded-md border border-black/6 bg-white/80 p-3 min-[360px]:p-4.5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs">
+                    <div className="sommelier-step-card rounded-md border border-black/6 bg-white/80 p-3 min-[360px]:p-4.5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs will-change-transform">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-mono text-[10px] min-[360px]:text-[11px] font-bold text-[#5f7a5b] tracking-wider uppercase">
                           LANGKAH 02
@@ -789,7 +1025,7 @@ export default function Home() {
                     </div>
 
                     {/* Step 3 */}
-                    <div className="rounded-md border border-black/6 bg-white/80 p-3 min-[360px]:p-4.5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs">
+                    <div className="sommelier-step-card rounded-md border border-black/6 bg-white/80 p-3 min-[360px]:p-4.5 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:shadow-xs will-change-transform">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-mono text-[10px] min-[360px]:text-[11px] font-bold text-[#5f7a5b] tracking-wider uppercase">
                           LANGKAH 03
@@ -808,7 +1044,7 @@ export default function Home() {
                   </div>
 
                   {/* Actions & Verified Sommelier Trust Strip */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 pt-3.5 sm:pt-4 border-t border-[#2d3d2e]/12">
+                  <div className="sommelier-trust-strip flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 pt-3.5 sm:pt-4 border-t border-[#2d3d2e]/12 will-change-transform">
                     <button
                       type="button"
                       onClick={() => scrollToSection("ulasan")}
@@ -846,23 +1082,20 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </RevealOnScroll>
           </section>
 
           {/* ==================== ARTISANAL CUSTOMER REVIEWS (AUTHENTIC TASTING EXPERIENCES) ==================== */}
           <section className="mx-auto max-w-7xl px-2.5 min-[360px]:px-4 sm:px-6 lg:px-8 pb-4">
-            <RevealOnScroll y={20}>
-              <ArtisanalReviews
-                onQuickOrderClick={() => quickAddToCart(PRODUCTS_DATA[0])}
-              />
-            </RevealOnScroll>
+            <ArtisanalReviews
+              onQuickOrderClick={() => quickAddToCart(PRODUCTS_DATA[0])}
+            />
           </section>
 
           {/* ==================== SIMPLE MONUMENTAL EDITORIAL FOOTER ==================== */}
           <footer className="mt-14 bg-[#111a13] text-white pt-10 sm:pt-12 pb-[max(24px,env(safe-area-inset-bottom))] border-t border-white/10 overflow-hidden">
             <div className="mx-auto max-w-7xl px-2.5 min-[360px]:px-4 sm:px-6 lg:px-8">
               {/* Top Row: Clean Navigation & Tea Spotlight */}
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 pb-8 sm:pb-10 border-b border-white/10">
+              <div className="footer-top-row flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 pb-8 sm:pb-10 border-b border-white/10 will-change-transform">
                 {/* Brand Philosophy & Product Photo Note */}
                 <div className="flex items-start sm:items-center gap-3 min-[360px]:gap-4 max-w-lg">
                   <div className="relative h-16 w-14 min-[360px]:h-20 min-[360px]:w-16 sm:h-22 sm:w-18 shrink-0 rounded-md overflow-hidden border border-white/20 shadow-md">
@@ -933,14 +1166,14 @@ export default function Home() {
               </div>
 
               {/* MONUMENTAL OVERSIZED BRAND TYPOGRAPHY: TULISAN VERDANTEA GEDE BANGET */}
-              <div className="py-6 sm:py-12 select-none overflow-hidden">
-                <div className="font-serif font-black tracking-[-0.04em] leading-[0.88] text-[clamp(26px,12.5vw,196px)] text-white/10 hover:text-white/16 transition-colors duration-500 text-center uppercase whitespace-nowrap will-change-transform">
+              <div className="footer-monumental-container py-6 sm:py-12 select-none overflow-hidden">
+                <div className="footer-monumental-text font-serif font-black tracking-[-0.04em] leading-[0.88] text-[clamp(26px,12.5vw,196px)] text-white/10 hover:text-white/16 transition-colors duration-500 text-center uppercase whitespace-nowrap will-change-transform">
                   VERDANTEA
                 </div>
               </div>
 
               {/* Bottom Trust & Legal Strip */}
-              <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] min-[360px]:text-xs text-white/50 text-center sm:text-left">
+              <div className="footer-bottom-strip pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] min-[360px]:text-xs text-white/50 text-center sm:text-left will-change-transform">
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 min-[360px]:gap-2">
                   <span className="text-white/40 uppercase tracking-wider text-[9.5px] min-[360px]:text-[10px] font-semibold w-full sm:w-auto">
                     Pembayaran & Ekspedisi:

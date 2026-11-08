@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Star,
   ThumbsUp,
@@ -387,6 +389,7 @@ interface ArtisanalReviewsProps {
 }
 
 export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const [reviews, setReviews] = useState<ReviewItem[]>(INITIAL_REVIEWS_DATA);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [helpfulVotes, setHelpfulVotes] = useState<Record<string, number>>({});
@@ -434,6 +437,119 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       // ignore
     }
   };
+
+  // GSAP Entrance animations for review header, dashboard cards, and animated progress bars
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    if (typeof window !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
+    }
+
+    const ctx = gsap.context(() => {
+      // 1. Header reveal
+      gsap.from(".review-section-header", {
+        opacity: 0,
+        y: 22,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".review-section-header",
+          start: "top 88%",
+          once: true,
+        },
+      });
+
+      // 2. Dashboard 3 Cards Stagger
+      gsap.from(".review-dashboard-card", {
+        opacity: 0,
+        y: 28,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".review-dashboard-container",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      // 3. Sensory Progress Bars: dynamic animated fill from 0%
+      const sensoryBars = gsap.utils.toArray<HTMLElement>(".sensory-progress-bar");
+      if (sensoryBars.length > 0) {
+        gsap.fromTo(
+          sensoryBars,
+          { width: "0%" },
+          {
+            width: (i, el) => el.getAttribute("data-target-width") || "95%",
+            duration: 1.15,
+            stagger: 0.12,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ".review-dashboard-container",
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      // 4. Star Distribution Bars: animated fill from 0%
+      const starBars = gsap.utils.toArray<HTMLElement>(".star-progress-bar");
+      if (starBars.length > 0) {
+        gsap.fromTo(
+          starBars,
+          { width: "0%" },
+          {
+            width: (i, el) => el.getAttribute("data-target-width") || "0%",
+            duration: 0.95,
+            stagger: 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ".review-dashboard-container",
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      // 5. Callout Card Reveal
+      gsap.from(".review-callout-card", {
+        opacity: 0,
+        y: 22,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".review-callout-card",
+          start: "top 88%",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // GSAP animation for review cards when filter or pagination changes
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from(".customer-review-card", {
+        opacity: 0,
+        y: 20,
+        duration: 0.65,
+        stagger: 0.07,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".customer-review-grid",
+          start: "top 88%",
+          once: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [activeFilter, visibleCount]);
 
   // Dynamic calculations: Every single number is 100% derived from the actual reviews array
   const totalCount = reviews.length;
@@ -564,7 +680,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
   };
 
   return (
-    <section id="ulasan" className="relative scroll-mt-20 py-8 sm:py-12">
+    <section ref={sectionRef} id="ulasan" className="relative scroll-mt-20 py-8 sm:py-12">
       {/* Toast Notification */}
       {toastMsg && (
         <div className="fixed bottom-6 right-4 sm:right-6 z-50 max-w-[calc(100%-2rem)] sm:max-w-sm rounded-md bg-[#2d3d2e] p-3.5 text-white shadow-xl border border-white/15 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 duration-200">
@@ -574,7 +690,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       )}
 
       {/* Section Header */}
-      <div className="mb-6 sm:mb-8 text-center px-1">
+      <div className="review-section-header mb-6 sm:mb-8 text-center px-1">
         <div className="inline-flex items-center rounded-md bg-[#253927] border border-white/10 px-3 py-1 text-[9px] min-[360px]:text-[10px] sm:text-[10.5px] font-bold tracking-wider min-[360px]:tracking-widest text-[#a8c99a] uppercase shadow-xs mb-2.5">
           <span>EVALUASI SENSORIS & ULASAN KONSUMEN</span>
         </div>
@@ -588,9 +704,9 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
 
       {/* Sommelier Rating & Sensory Metrics Dashboard (Fully Responsive Grid) */}
       <div className="rounded-lg border border-black/8 bg-[#efe8dc] p-2.5 min-[360px]:p-3.5 sm:p-6 lg:p-7 shadow-xs mb-6 sm:mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 min-[360px]:gap-4 sm:gap-6 lg:gap-8 items-stretch">
+        <div className="review-dashboard-container grid grid-cols-1 lg:grid-cols-12 gap-3.5 min-[360px]:gap-4 sm:gap-6 lg:gap-8 items-stretch">
           {/* Column 1: Overall Score Badge (Kinfolk / Editorial Style) */}
-          <div className="lg:col-span-4 flex flex-col justify-between items-center text-center p-3.5 min-[360px]:p-4 sm:p-5 rounded-md border border-black/6 bg-white/80 shadow-2xs">
+          <div className="review-dashboard-card lg:col-span-4 flex flex-col justify-between items-center text-center p-3.5 min-[360px]:p-4 sm:p-5 rounded-md border border-black/6 bg-white/80 shadow-2xs">
             <div className="w-full">
               <span className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-[11px] font-mono uppercase tracking-widest text-[#5f7a5b] font-bold block mb-1">
                 SKOR KEPUASAN RASA
@@ -640,7 +756,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
           </div>
 
           {/* Column 2: Sommelier Sensory Parameter Index */}
-          <div className="lg:col-span-5 flex flex-col justify-between space-y-2.5 sm:space-y-3 p-3.5 min-[360px]:p-4 sm:p-5 rounded-md border border-black/6 bg-white/80 shadow-2xs">
+          <div className="review-dashboard-card lg:col-span-5 flex flex-col justify-between space-y-2.5 sm:space-y-3 p-3.5 min-[360px]:p-4 sm:p-5 rounded-md border border-black/6 bg-white/80 shadow-2xs">
             <div className="text-[10px] min-[360px]:text-[11px] sm:text-[11.5px] font-mono uppercase tracking-wider text-[#2d3d2e] font-bold flex items-center justify-between pb-1 border-b border-black/6">
               <span>PARAMETER MUTU SEDUHAN</span>
               <span className="text-[#5f7a5b]">UJI HEDONIK</span>
@@ -655,7 +771,11 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
                 </span>
               </div>
               <div className="h-1.5 w-full bg-[#e8e0d0] rounded-full overflow-hidden">
-                <div className="h-full bg-[#5f7a5b] rounded-full w-[98%]" />
+                <div
+                  className="sensory-progress-bar h-full bg-[#5f7a5b] rounded-full will-change-[width]"
+                  data-target-width="98%"
+                  style={{ width: "0%" }}
+                />
               </div>
             </div>
 
@@ -668,7 +788,11 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
                 </span>
               </div>
               <div className="h-1.5 w-full bg-[#e8e0d0] rounded-full overflow-hidden">
-                <div className="h-full bg-[#5f7a5b] rounded-full w-[96%]" />
+                <div
+                  className="sensory-progress-bar h-full bg-[#5f7a5b] rounded-full will-change-[width]"
+                  data-target-width="96%"
+                  style={{ width: "0%" }}
+                />
               </div>
             </div>
 
@@ -681,7 +805,11 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
                 </span>
               </div>
               <div className="h-1.5 w-full bg-[#e8e0d0] rounded-full overflow-hidden">
-                <div className="h-full bg-[#2d3d2e] rounded-full w-full" />
+                <div
+                  className="sensory-progress-bar h-full bg-[#2d3d2e] rounded-full will-change-[width]"
+                  data-target-width="100%"
+                  style={{ width: "0%" }}
+                />
               </div>
             </div>
 
@@ -694,13 +822,17 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
                 </span>
               </div>
               <div className="h-1.5 w-full bg-[#e8e0d0] rounded-full overflow-hidden">
-                <div className="h-full bg-[#5f7a5b] rounded-full w-[98%]" />
+                <div
+                  className="sensory-progress-bar h-full bg-[#5f7a5b] rounded-full will-change-[width]"
+                  data-target-width="98%"
+                  style={{ width: "0%" }}
+                />
               </div>
             </div>
           </div>
 
           {/* Column 3: Star Breakdown Bars (100% Calculated Dynamically) */}
-          <div className="lg:col-span-3 flex flex-col justify-between space-y-1.5 p-3.5 min-[360px]:p-4 sm:p-5 rounded-md border border-black/6 bg-white/80 shadow-2xs">
+          <div className="review-dashboard-card lg:col-span-3 flex flex-col justify-between space-y-1.5 p-3.5 min-[360px]:p-4 sm:p-5 rounded-md border border-black/6 bg-white/80 shadow-2xs">
             <span className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-[11px] font-mono uppercase tracking-wider text-[#4a5a48] font-bold mb-1">
               DISTRIBUSI BINTANG ({totalCount})
             </span>
@@ -711,8 +843,9 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
                   <span className="w-4 font-mono font-bold text-[#1a2218] shrink-0">{row.stars}★</span>
                   <div className="flex-1 h-1.5 bg-[#e8e0d0] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#b8934a] rounded-full transition-all duration-500"
-                      style={{ width: row.pct }}
+                      className="star-progress-bar h-full bg-[#b8934a] rounded-full transition-all duration-500 will-change-[width]"
+                      data-target-width={row.pct}
+                      style={{ width: "0%" }}
                     />
                   </div>
                   <span className="w-6 text-right font-mono text-[9.5px] sm:text-[10px] text-[#4a5a48]/80 shrink-0">
@@ -730,7 +863,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       </div>
 
       {/* Filter Tabs Strip (Touch scroll with safe indicators) */}
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 mb-5 sm:mb-6 scrollbar-none -mx-1 px-1">
+      <div className="review-filter-tabs flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 mb-5 sm:mb-6 scrollbar-none -mx-1 px-1">
         {filterTabs.map((tab) => {
           const isActive = activeFilter === tab.id;
           return (
