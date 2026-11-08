@@ -447,35 +447,44 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
 
     const ctx = gsap.context(() => {
       // 1. Header reveal
-      gsap.from(".review-section-header", {
-        opacity: 0,
-        y: 22,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".review-section-header",
-          start: "top 88%",
-          once: true,
-        },
-      });
+      const headerEl = sectionRef.current?.querySelector(".review-section-header");
+      if (headerEl) {
+        gsap.from(headerEl, {
+          opacity: 0,
+          y: 22,
+          duration: 0.8,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: headerEl,
+            start: "top 88%",
+            once: true,
+          },
+        });
+      }
 
       // 2. Dashboard 3 Cards Stagger
-      gsap.from(".review-dashboard-card", {
-        opacity: 0,
-        y: 28,
-        duration: 0.8,
-        stagger: 0.12,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".review-dashboard-container",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const dashCards = sectionRef.current?.querySelectorAll(".review-dashboard-card");
+      const dashContainer = sectionRef.current?.querySelector(".review-dashboard-container");
+      if (dashCards && dashCards.length > 0 && dashContainer) {
+        gsap.from(dashCards, {
+          opacity: 0,
+          y: 28,
+          duration: 0.8,
+          stagger: 0.12,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: dashContainer,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
       // 3. Sensory Progress Bars: dynamic animated fill from 0%
-      const sensoryBars = gsap.utils.toArray<HTMLElement>(".sensory-progress-bar");
-      if (sensoryBars.length > 0) {
+      const sensoryBars = sectionRef.current?.querySelectorAll<HTMLElement>(".sensory-progress-bar");
+      if (sensoryBars && sensoryBars.length > 0 && dashContainer) {
         gsap.fromTo(
           sensoryBars,
           { width: "0%" },
@@ -485,7 +494,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
             stagger: 0.12,
             ease: "power2.out",
             scrollTrigger: {
-              trigger: ".review-dashboard-container",
+              trigger: dashContainer,
               start: "top 80%",
               once: true,
             },
@@ -494,8 +503,8 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       }
 
       // 4. Star Distribution Bars: animated fill from 0%
-      const starBars = gsap.utils.toArray<HTMLElement>(".star-progress-bar");
-      if (starBars.length > 0) {
+      const starBars = sectionRef.current?.querySelectorAll<HTMLElement>(".star-progress-bar");
+      if (starBars && starBars.length > 0 && dashContainer) {
         gsap.fromTo(
           starBars,
           { width: "0%" },
@@ -505,7 +514,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
             stagger: 0.08,
             ease: "power2.out",
             scrollTrigger: {
-              trigger: ".review-dashboard-container",
+              trigger: dashContainer,
               start: "top 80%",
               once: true,
             },
@@ -514,17 +523,21 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       }
 
       // 5. Callout Card Reveal
-      gsap.from(".review-callout-card", {
-        opacity: 0,
-        y: 22,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".review-callout-card",
-          start: "top 88%",
-          once: true,
-        },
-      });
+      const calloutCard = sectionRef.current?.querySelector(".review-callout-card");
+      if (calloutCard) {
+        gsap.from(calloutCard, {
+          opacity: 0,
+          y: 22,
+          duration: 0.8,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: calloutCard,
+            start: "top 88%",
+            once: true,
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -534,18 +547,23 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
   useEffect(() => {
     if (!sectionRef.current) return;
     const ctx = gsap.context(() => {
-      gsap.from(".customer-review-card", {
-        opacity: 0,
-        y: 20,
-        duration: 0.65,
-        stagger: 0.07,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".customer-review-grid",
-          start: "top 88%",
-          once: true,
-        },
-      });
+      const reviewCards = sectionRef.current?.querySelectorAll(".customer-review-card");
+      const reviewGrid = sectionRef.current?.querySelector(".customer-review-grid");
+      if (reviewCards && reviewCards.length > 0 && reviewGrid) {
+        gsap.from(reviewCards, {
+          opacity: 0,
+          y: 20,
+          duration: 0.65,
+          stagger: 0.07,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: reviewGrid,
+            start: "top 88%",
+            once: true,
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -891,7 +909,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       </div>
 
       {/* Customer Reviews Cards Grid (All items are present in DOM when filtered/expanded) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-[360px]:gap-3.5 sm:gap-4.5 mb-6 sm:mb-8">
+      <div className="customer-review-grid grid grid-cols-1 md:grid-cols-2 gap-3 min-[360px]:gap-3.5 sm:gap-4.5 mb-6 sm:mb-8">
         {displayedReviews.map((rev) => {
           const currentHelpful = helpfulVotes[rev.id] ?? rev.helpfulCount;
           const isVoted = hasVoted[rev.id] ?? false;
@@ -899,7 +917,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
           return (
             <div
               key={rev.id}
-              className={`flex flex-col justify-between rounded-md border bg-white/85 p-3.5 min-[360px]:p-4 sm:p-5 shadow-2xs transition-all duration-300 hover:shadow-xs hover:border-black/15 ${rev.isNew ? "border-[#5f7a5b] bg-[#f5faf3]" : "border-black/8"
+              className={`customer-review-card will-change-transform flex flex-col justify-between rounded-md border bg-white/85 p-3.5 min-[360px]:p-4 sm:p-5 shadow-2xs transition-all duration-300 hover:shadow-xs hover:border-black/15 ${rev.isNew ? "border-[#5f7a5b] bg-[#f5faf3]" : "border-black/8"
                 }`}
             >
               <div>
@@ -1027,7 +1045,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       )}
 
       {/* Human Callout: Bagikan Pengalaman Seduh Anda (WhatsApp Curator Direct) */}
-      <div className="rounded-lg border border-[#2d3d2e]/20 bg-[#f4eee2] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-2xs">
+      <div className="review-callout-card will-change-transform rounded-lg border border-[#2d3d2e]/20 bg-[#f4eee2] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-2xs">
         <div className="flex items-start gap-3 text-center sm:text-left w-full md:w-auto">
           <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#2d3d2e] text-[#a8c99a]">
             <MessageSquare className="h-5 w-5" />

@@ -165,196 +165,240 @@ export default function Home() {
 
     const ctx = gsap.context(() => {
       // 1. Hero Entrance Timeline (cinematic & fluid)
-      const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      heroTl
-        .from(".hero-badge", {
-          opacity: 0,
-          y: -16,
-          duration: 0.8,
-          delay: 0.1,
-          clearProps: "opacity,transform",
-        })
-        .from(
-          ".hero-title",
-          {
+      const heroBadge = pageRef.current?.querySelector(".hero-badge");
+      const heroTitle = pageRef.current?.querySelector(".hero-title");
+      const heroDesc = pageRef.current?.querySelector(".hero-desc");
+      const heroCtaBtns = pageRef.current?.querySelectorAll(".hero-cta-btn");
+      const heroScrollBtn = pageRef.current?.querySelector(".hero-scroll-btn");
+
+      if (heroBadge && heroTitle && heroDesc && heroCtaBtns && heroCtaBtns.length > 0 && heroScrollBtn) {
+        const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+        heroTl
+          .from(heroBadge, {
             opacity: 0,
-            y: 32,
-            duration: 0.95,
-            ease: "power3.out",
-            clearProps: "opacity,transform",
-          },
-          "-=0.55"
-        )
-        .from(
-          ".hero-desc",
-          {
-            opacity: 0,
-            y: 20,
+            y: -16,
             duration: 0.8,
+            delay: 0.1,
             clearProps: "opacity,transform",
-          },
-          "-=0.6"
-        )
-        .from(
-          ".hero-cta-btn",
-          {
-            opacity: 0,
-            y: 18,
-            stagger: 0.12,
-            duration: 0.7,
-            clearProps: "opacity,transform",
-          },
-          "-=0.5"
-        )
-        .from(
-          ".hero-scroll-btn",
-          {
-            opacity: 0,
-            duration: 0.8,
-            clearProps: "opacity",
-          },
-          "-=0.3"
-        );
+          })
+          .from(
+            heroTitle,
+            {
+              opacity: 0,
+              y: 32,
+              duration: 0.95,
+              ease: "power3.out",
+              clearProps: "opacity,transform",
+            },
+            "-=0.55"
+          )
+          .from(
+            heroDesc,
+            {
+              opacity: 0,
+              y: 20,
+              duration: 0.8,
+              clearProps: "opacity,transform",
+            },
+            "-=0.6"
+          )
+          .from(
+            heroCtaBtns,
+            {
+              opacity: 0,
+              y: 18,
+              stagger: 0.12,
+              duration: 0.7,
+              clearProps: "opacity,transform",
+            },
+            "-=0.5"
+          )
+          .from(
+            heroScrollBtn,
+            {
+              opacity: 0,
+              duration: 0.8,
+              clearProps: "opacity",
+            },
+            "-=0.3"
+          );
+      }
 
       // 2. Section: First Part Header Strip
-      gsap.from(".showcase-header-strip", {
-        opacity: 0,
-        y: 20,
-        duration: 0.8,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".showcase-header-strip",
-          start: "top 88%",
-          once: true,
-        },
-      });
+      const showcaseStrip = pageRef.current?.querySelector(".showcase-header-strip");
+      if (showcaseStrip) {
+        gsap.from(showcaseStrip, {
+          opacity: 0,
+          y: 20,
+          duration: 0.8,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: showcaseStrip,
+            start: "top 88%",
+            once: true,
+          },
+        });
+      }
 
       // 3. Section: Tier 1 Showcase Chamber Card
-      gsap.from(".tier1-chamber-card", {
-        opacity: 0,
-        y: 28,
-        scale: 0.97,
-        duration: 0.85,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".tier1-showcase-container",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const tier1Card = pageRef.current?.querySelector(".tier1-chamber-card");
+      const tier1Container = pageRef.current?.querySelector(".tier1-showcase-container");
+      if (tier1Card && tier1Container) {
+        gsap.from(tier1Card, {
+          opacity: 0,
+          y: 28,
+          scale: 0.97,
+          duration: 0.85,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: tier1Container,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
       // 4. Section: Tier 1 2x2 Artisanal Matrix (4 cells staggered)
-      gsap.from(".artisanal-matrix-cell", {
-        opacity: 0,
-        y: 26,
-        duration: 0.75,
-        stagger: 0.1,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".artisanal-matrix-grid",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const matrixCells = pageRef.current?.querySelectorAll(".artisanal-matrix-cell");
+      const matrixGrid = pageRef.current?.querySelector(".artisanal-matrix-grid");
+      if (matrixCells && matrixCells.length > 0 && matrixGrid) {
+        gsap.from(matrixCells, {
+          opacity: 0,
+          y: 26,
+          duration: 0.75,
+          stagger: 0.1,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: matrixGrid,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
       // 5. Section: Tier 2 Dual-Panel (Left: Anatomi Pucuk, Right: Pure Brewed Liquor)
-      gsap.from(".tier2-panel", {
-        opacity: 0,
-        y: 30,
-        duration: 0.85,
-        stagger: 0.14,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".tier2-grid",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const tier2Panels = pageRef.current?.querySelectorAll(".tier2-panel");
+      const tier2Grid = pageRef.current?.querySelector(".tier2-grid");
+      if (tier2Panels && tier2Panels.length > 0 && tier2Grid) {
+        gsap.from(tier2Panels, {
+          opacity: 0,
+          y: 30,
+          duration: 0.85,
+          stagger: 0.14,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: tier2Grid,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
       // 6. Section: Sommelier Brewing Ritual
-      gsap.from(".sommelier-header", {
-        opacity: 0,
-        y: 22,
-        duration: 0.8,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: "#ritual-seduh",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const sommelierHeader = pageRef.current?.querySelector(".sommelier-header");
+      const sommelierSection = pageRef.current?.querySelector("#ritual-seduh");
+      if (sommelierHeader && sommelierSection) {
+        gsap.from(sommelierHeader, {
+          opacity: 0,
+          y: 22,
+          duration: 0.8,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: sommelierSection,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
-      gsap.from(".sommelier-step-card", {
-        opacity: 0,
-        y: 28,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".sommelier-steps-grid",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const sommelierSteps = pageRef.current?.querySelectorAll(".sommelier-step-card");
+      const sommelierStepsGrid = pageRef.current?.querySelector(".sommelier-steps-grid");
+      if (sommelierSteps && sommelierSteps.length > 0 && sommelierStepsGrid) {
+        gsap.from(sommelierSteps, {
+          opacity: 0,
+          y: 28,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: sommelierStepsGrid,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
-      gsap.from(".sommelier-trust-strip", {
-        opacity: 0,
-        y: 18,
-        duration: 0.7,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".sommelier-trust-strip",
-          start: "top 92%",
-          once: true,
-        },
-      });
+      const sommelierTrust = pageRef.current?.querySelector(".sommelier-trust-strip");
+      if (sommelierTrust) {
+        gsap.from(sommelierTrust, {
+          opacity: 0,
+          y: 18,
+          duration: 0.7,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: sommelierTrust,
+            start: "top 92%",
+            once: true,
+          },
+        });
+      }
 
       // 7. Section: Footer
-      gsap.from(".footer-top-row", {
-        opacity: 0,
-        y: 24,
-        duration: 0.8,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".footer-top-row",
-          start: "top 88%",
-          once: true,
-        },
-      });
+      const footerRow = pageRef.current?.querySelector(".footer-top-row");
+      if (footerRow) {
+        gsap.from(footerRow, {
+          opacity: 0,
+          y: 24,
+          duration: 0.8,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: footerRow,
+            start: "top 88%",
+            once: true,
+          },
+        });
+      }
 
-      gsap.from(".footer-monumental-text", {
-        opacity: 0,
-        scale: 0.94,
-        duration: 1.1,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".footer-monumental-container",
-          start: "top 85%",
-          once: true,
-        },
-      });
+      const footerMonumental = pageRef.current?.querySelector(".footer-monumental-text");
+      const footerMonumentalContainer = pageRef.current?.querySelector(".footer-monumental-container");
+      if (footerMonumental && footerMonumentalContainer) {
+        gsap.from(footerMonumental, {
+          opacity: 0,
+          scale: 0.94,
+          duration: 1.1,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: footerMonumentalContainer,
+            start: "top 85%",
+            once: true,
+          },
+        });
+      }
 
-      gsap.from(".footer-bottom-strip", {
-        opacity: 0,
-        y: 14,
-        duration: 0.6,
-        ease: "power2.out",
-        clearProps: "opacity,transform",
-        scrollTrigger: {
-          trigger: ".footer-bottom-strip",
-          start: "top 95%",
-          once: true,
-        },
-      });
+      const footerBottom = pageRef.current?.querySelector(".footer-bottom-strip");
+      if (footerBottom) {
+        gsap.from(footerBottom, {
+          opacity: 0,
+          y: 14,
+          duration: 0.6,
+          ease: "power2.out",
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: footerBottom,
+            start: "top 95%",
+            once: true,
+          },
+        });
+      }
 
       // 8. Desktop-Only Parallax & Kinesthetic Depth (min-width: 768px)
       // Keeps mobile 100% fluid and prevents any scroll stutter
@@ -375,39 +419,51 @@ export default function Home() {
         }
 
         // Tier 2 Images Subtle Depth Parallax
-        gsap.to(".tier2-image-left", {
-          yPercent: 10,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".tier2-grid",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.8,
-          },
-        });
+        const imgLeft = pageRef.current?.querySelector(".tier2-image-left");
+        const imgRight = pageRef.current?.querySelector(".tier2-image-right");
+        const tier2GridEl = pageRef.current?.querySelector(".tier2-grid");
 
-        gsap.to(".tier2-image-right", {
-          yPercent: 10,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".tier2-grid",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.8,
-          },
-        });
+        if (imgLeft && tier2GridEl) {
+          gsap.to(imgLeft, {
+            yPercent: 10,
+            ease: "none",
+            scrollTrigger: {
+              trigger: tier2GridEl,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.8,
+            },
+          });
+        }
+
+        if (imgRight && tier2GridEl) {
+          gsap.to(imgRight, {
+            yPercent: 10,
+            ease: "none",
+            scrollTrigger: {
+              trigger: tier2GridEl,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.8,
+            },
+          });
+        }
 
         // Footer Monumental Text Subtle Drift
-        gsap.to(".footer-monumental-text", {
-          xPercent: -3,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".footer-monumental-container",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1.2,
-          },
-        });
+        const textMonumental = pageRef.current?.querySelector(".footer-monumental-text");
+        const contMonumental = pageRef.current?.querySelector(".footer-monumental-container");
+        if (textMonumental && contMonumental) {
+          gsap.to(textMonumental, {
+            xPercent: -3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: contMonumental,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.2,
+            },
+          });
+        }
       });
     }, pageRef);
 
