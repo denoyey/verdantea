@@ -39,6 +39,7 @@ import { RevealOnScroll } from "@/components/animated/RevealOnScroll";
 import { MagneticWrapper } from "@/components/animated/MagneticWrapper";
 import { LivingTeaChamber } from "@/components/animated/LivingTeaChamber";
 import { ArtisanalReviews } from "@/components/artisanal/ArtisanalReviews";
+import { BackToTop } from "@/components/animated/BackToTop";
 
 interface Product {
   id: string;
@@ -1340,6 +1341,9 @@ export default function Home() {
           <span className="flex h-2 w-2 rounded-full bg-[#a8c99a] animate-pulse" />
           <span className="truncate">{toastMessage}</span>
         </div>
+
+        {/* ==================== BACK TO TOP BUTTON ==================== */}
+        <BackToTop hideWhenModalOpen={isAnyModalOpen} />
       </div>
     </TooltipProvider>
   );
