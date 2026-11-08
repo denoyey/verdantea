@@ -311,7 +311,7 @@ export default function Home() {
       .map((i) => `• ${i.emoji} ${i.name} (${i.weight}) ×${i.qty} = ${formatRp(i.price * i.qty)}`)
       .join("\n");
 
-    const msg = `Halo Verdantea! 🍃\n\nSaya ingin memesan Verdantea Pure Green Tea:\n${items}\n\n💰 Total: ${formatRp(totalCartAmount)}\n\n👤 Nama: ${buyerName}\n📱 WhatsApp: ${buyerPhone}\n🏠 Alamat: ${buyerAddress}\n🚚 Ekspedisi: ${buyerShipping}${buyerNote ? `\n📝 Catatan: ${buyerNote}` : ""
+    const msg = `Halo Verdantea!\n\nSaya ingin memesan Verdantea Pure Green Tea:\n${items}\n\n💰 Total: ${formatRp(totalCartAmount)}\n\n👤 Nama: ${buyerName}\n📱 WhatsApp: ${buyerPhone}\n🏠 Alamat: ${buyerAddress}\n🚚 Ekspedisi: ${buyerShipping}${buyerNote ? `\n📝 Catatan: ${buyerNote}` : ""
       }\n\nMohon konfirmasi pesanan dan informasi rekening pembayaran. Terima kasih!`;
 
     const waNumber = "62895338558400";
@@ -335,19 +335,18 @@ export default function Home() {
             } pt-[max(10px,env(safe-area-inset-top))] px-2.5 min-[360px]:px-4 sm:px-6 lg:px-8`}
         >
           <div className="mx-auto max-w-7xl flex items-center justify-between gap-1.5 min-[360px]:gap-3">
-            {/* Left: Brand / Home Link */}
+            {/* Left: Brand / Home Link (Pure Editorial Typography) */}
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
                 scrollToSection("hero");
               }}
-              className="flex items-center gap-1.5 min-[360px]:gap-2 text-white font-semibold text-base min-[360px]:text-lg tracking-tight no-underline group shrink-0"
+              className="flex items-center text-white no-underline group shrink-0 py-0.5"
             >
-              <div className="flex h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 items-center justify-center rounded-md bg-white/20 border border-white/30 text-emerald-200 transition-transform group-hover:scale-105 text-xs min-[360px]:text-sm">
-                🍃
-              </div>
-              <span className="font-serif tracking-wide text-lg min-[360px]:text-xl">Verdantea</span>
+              <span className="font-serif tracking-[0.06em] text-lg min-[360px]:text-xl sm:text-2xl font-bold transition-opacity group-hover:opacity-85">
+                Verdantea
+              </span>
             </a>
 
             {/* Center: Editorial Product Micro-Bar (Appears when scrolled past hero on tablet & desktop) */}
@@ -473,9 +472,8 @@ export default function Home() {
           <div className="relative z-10 w-full max-w-230 px-1 min-[360px]:px-3 sm:px-8 text-center text-white my-auto pt-10 min-[360px]:pt-14 sm:pt-16 pb-8 sm:pb-8">
             <div
               className={`transition-all duration-700 ease-out ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                } mb-3 min-[360px]:mb-4 sm:mb-6 inline-flex items-center gap-1.5 min-[360px]:gap-2 rounded-md border border-white/20 bg-black/40 px-2.5 min-[360px]:px-3.5 sm:px-5 py-1 sm:py-1.5 shadow-sm`}
+                } mb-3 min-[360px]:mb-4 sm:mb-6 inline-flex items-center rounded-md border border-white/20 bg-black/40 px-3 min-[360px]:px-4 sm:px-5 py-1 sm:py-1.5 shadow-sm`}
             >
-              <span className="text-xs">🍃</span>
               <span className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-[12px] font-semibold uppercase tracking-[1.5px] min-[360px]:tracking-[2.5px] sm:tracking-[3px] text-white/90">
                 Pure · Natural · Artisan
               </span>

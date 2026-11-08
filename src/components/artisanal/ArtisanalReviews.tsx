@@ -575,8 +575,7 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
 
       {/* Section Header */}
       <div className="mb-6 sm:mb-8 text-center px-1">
-        <div className="inline-flex items-center gap-1.5 rounded-md bg-[#253927] border border-white/10 px-2.5 min-[360px]:px-3 py-1 text-[9px] min-[360px]:text-[10px] sm:text-[10.5px] font-bold tracking-wider min-[360px]:tracking-widest text-[#a8c99a] uppercase shadow-xs mb-2.5">
-          <Leaf className="h-3 w-3 text-[#a8c99a] shrink-0" />
+        <div className="inline-flex items-center rounded-md bg-[#253927] border border-white/10 px-3 py-1 text-[9px] min-[360px]:text-[10px] sm:text-[10.5px] font-bold tracking-wider min-[360px]:tracking-widest text-[#a8c99a] uppercase shadow-xs mb-2.5">
           <span>EVALUASI SENSORIS & ULASAN KONSUMEN</span>
         </div>
         <h2 className="font-serif text-[20px] min-[360px]:text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#1a2218] tracking-tight leading-tight">
@@ -895,38 +894,38 @@ export function ArtisanalReviews({ onQuickOrderClick }: ArtisanalReviewsProps) {
       )}
 
       {/* Human Callout: Bagikan Pengalaman Seduh Anda (WhatsApp Curator Direct) */}
-      <div className="rounded-lg border border-[#2d3d2e]/20 bg-[#f4eee2] p-3.5 min-[360px]:p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 shadow-2xs">
-        <div className="flex items-start gap-3 text-center sm:text-left w-full sm:w-auto">
+      <div className="rounded-lg border border-[#2d3d2e]/20 bg-[#f4eee2] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-2xs">
+        <div className="flex items-start gap-3 text-center sm:text-left w-full md:w-auto">
           <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#2d3d2e] text-[#a8c99a]">
             <MessageSquare className="h-5 w-5" />
           </div>
           <div>
-            <div className="font-serif text-[15px] sm:text-[17px] font-bold text-[#1a2218]">
+            <div className="font-serif text-[16px] sm:text-[18px] font-bold text-[#1a2218]">
               Sudah Pernah Menyeduh Verdantea?
             </div>
-            <p className="text-[11px] min-[360px]:text-[11.5px] sm:text-[12.5px] text-[#4a5a48] leading-relaxed mt-0.5">
+            <p className="text-[12px] sm:text-[13px] text-[#4a5a48] leading-relaxed mt-0.5">
               Tulis ulasan langsung ke sistem web ini atau konsultasikan catatan seduh dengan kurator teh kami di WhatsApp Resmi.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col min-[360px]:flex-row items-center gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto shrink-0">
           <button
             type="button"
             onClick={() => setIsWriteModalOpen(true)}
-            className="w-full min-[360px]:w-auto min-[360px]:flex-1 sm:flex-none h-10 min-[360px]:h-10.5 px-4 rounded-md border border-[#2d3d2e]/25 bg-white hover:bg-white/90 text-[#2d3d2e] text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-98 cursor-pointer"
+            className="w-full sm:w-auto h-11 px-5 rounded-md border border-[#2d3d2e]/25 bg-white hover:bg-white/90 text-[#2d3d2e] text-xs sm:text-[13px] font-semibold flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-98 cursor-pointer whitespace-nowrap"
           >
-            <PenSquare className="h-3.5 w-3.5" />
+            <PenSquare className="h-4 w-4 shrink-0" />
             <span>Kirim Ulasan Rasa</span>
           </button>
 
           {onQuickOrderClick && (
             <button
               onClick={onQuickOrderClick}
-              className="w-full min-[360px]:w-auto min-[360px]:flex-1 sm:flex-none h-10 min-[360px]:h-10.5 px-4.5 rounded-md bg-[#2d3d2e] hover:bg-[#1a241b] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-98 cursor-pointer"
+              className="w-full sm:w-auto h-11 px-5 rounded-md bg-[#2d3d2e] hover:bg-[#1a241b] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-98 cursor-pointer whitespace-nowrap"
             >
               <span>Pesan Sekarang (15k)</span>
-              <ArrowRight className="h-3.5 w-3.5 text-[#a8c99a]" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-[#a8c99a]" />
             </button>
           )}
         </div>
