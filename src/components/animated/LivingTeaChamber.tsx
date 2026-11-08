@@ -156,7 +156,7 @@ export function LivingTeaChamber({
             </div>
             <span className="text-[11px] font-bold text-[#1a2218]">4.9</span>
             <span className="text-[10.5px] text-[#4a5a48] group-hover:text-[#2d3d2e] group-hover:underline">
-              (142 ulasan pembeli)
+              (24 ulasan pembeli)
             </span>
           </button>
 

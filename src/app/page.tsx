@@ -77,7 +77,7 @@ const PRODUCTS_DATA: Product[] = [
     emoji: "🍵",
     badge: "Terlaris",
     rating: 4.9,
-    reviewsCount: 142,
+    reviewsCount: 24,
     tastingNotes: ["Embun Fajar", "Rerumputan Segar", "Manis Gurih Umami"],
     desc: "Dipetik langsung dari petikan pucuk pertama (first flush) saat fajar di lereng Gunung Tilu, Jawa Barat pada ketinggian 1.450 mdpl. Daun teh utuh dikukus kilat untuk mempertahankan warna hijau zamrud murni, serta mengunci kandungan antioksidan polifenol & katekin EGCG tertinggi tanpa rasa sepat berlebih.",
     origin: "Gunung Tilu, Jawa Barat",
@@ -373,7 +373,7 @@ export default function Home() {
               >
                 <Star className="h-3 w-3 fill-[#c29443] text-[#c29443]" />
                 <span className="font-bold text-[#a8c99a]">4.9</span>
-                <span className="text-white/50 text-[10px]">(142)</span>
+                <span className="text-white/50 text-[10px]">(24)</span>
               </button>
               <span className="text-white/30 text-xs">•</span>
               <span className="text-[11.5px] font-bold text-[#a8c99a]">
@@ -820,7 +820,7 @@ export default function Home() {
                         <span className="text-[#1a2218]">4.9</span>
                       </div>
                       <span className="text-black/30">•</span>
-                      <span className="group-hover:underline">142 ulasan</span>
+                      <span className="group-hover:underline">24 ulasan</span>
                       <span className="text-black/30">•</span>
                       <span className="text-[#2d3d2e] font-semibold">Petikan Pucuk Peko Pertama</span>
                     </button>
@@ -1264,7 +1264,7 @@ export default function Home() {
                         ))}
                       </div>
                       <span className="text-[12px] font-bold text-[#1a2218]">4.9</span>
-                      <span className="text-[11px] text-[#4a5a48]">• 142 Ulasan Terverifikasi</span>
+                      <span className="text-[11px] text-[#4a5a48]">• 24 Ulasan Terverifikasi</span>
                     </div>
                     <div className="mt-1.5 flex items-baseline gap-2">
                       <span className="text-[20px] min-[360px]:text-[22px] font-extrabold text-[#2d3d2e]">
