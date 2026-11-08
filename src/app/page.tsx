@@ -38,6 +38,7 @@ import {
 import { RevealOnScroll } from "@/components/animated/RevealOnScroll";
 import { MagneticWrapper } from "@/components/animated/MagneticWrapper";
 import { LivingTeaChamber } from "@/components/animated/LivingTeaChamber";
+import { ArtisanalReviews } from "@/components/artisanal/ArtisanalReviews";
 
 interface Product {
   id: string;
@@ -364,6 +365,17 @@ export default function Home() {
                 50g
               </span>
               <span className="text-white/30 text-xs">•</span>
+              <button
+                type="button"
+                onClick={() => scrollToSection("ulasan")}
+                className="flex items-center gap-1 text-[11px] text-white/80 hover:text-white cursor-pointer transition-colors"
+                title="Lihat Ulasan Pembeli"
+              >
+                <Star className="h-3 w-3 fill-[#c29443] text-[#c29443]" />
+                <span className="font-bold text-[#a8c99a]">4.9</span>
+                <span className="text-white/50 text-[10px]">(142)</span>
+              </button>
+              <span className="text-white/30 text-xs">•</span>
               <span className="text-[11.5px] font-bold text-[#a8c99a]">
                 {totalCartCount > 0 ? formatRp(totalCartAmount) : "Rp 15.000"}
               </span>
@@ -560,6 +572,7 @@ export default function Home() {
                     <LivingTeaChamber
                       onQuickAdd={() => quickAddToCart(PRODUCTS_DATA[0])}
                       onOpenDetail={() => openProductDetail(PRODUCTS_DATA[0])}
+                      onReviewClick={() => scrollToSection("ulasan")}
                       priceFormatted={formatRp(PRODUCTS_DATA[0].price)}
                     />
                   </div>
@@ -797,16 +810,20 @@ export default function Home() {
 
                   {/* Actions & Verified Sommelier Trust Strip */}
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3.5 sm:gap-4 pt-3.5 sm:pt-4 border-t border-[#2d3d2e]/12">
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 min-[360px]:gap-2 text-[10.5px] min-[360px]:text-[12px] text-[#4a5a48] text-center sm:text-left">
-                      <div className="flex items-center text-amber-600 font-bold">
-                        <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500 mr-1" />
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("ulasan")}
+                      className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 min-[360px]:gap-2 text-[10.5px] min-[360px]:text-[12px] text-[#4a5a48] text-center sm:text-left cursor-pointer group hover:text-[#1a2218] transition-colors"
+                    >
+                      <div className="flex items-center text-[#b8934a] font-bold">
+                        <Star className="h-3.5 w-3.5 fill-[#b8934a] mr-1" />
                         <span className="text-[#1a2218]">4.9</span>
                       </div>
                       <span className="text-black/30">•</span>
-                      <span>142 ulasan</span>
+                      <span className="group-hover:underline">142 ulasan</span>
                       <span className="text-black/30">•</span>
                       <span className="text-[#2d3d2e] font-semibold">Petikan Pucuk Peko Pertama</span>
-                    </div>
+                    </button>
 
                     <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                       <button
@@ -833,6 +850,14 @@ export default function Home() {
             </RevealOnScroll>
           </section>
 
+          {/* ==================== ARTISANAL CUSTOMER REVIEWS (AUTHENTIC TASTING EXPERIENCES) ==================== */}
+          <section className="mx-auto max-w-7xl px-2.5 min-[360px]:px-4 sm:px-6 lg:px-8 pb-4">
+            <RevealOnScroll y={20}>
+              <ArtisanalReviews
+                onQuickOrderClick={() => quickAddToCart(PRODUCTS_DATA[0])}
+              />
+            </RevealOnScroll>
+          </section>
 
           {/* ==================== SIMPLE MONUMENTAL EDITORIAL FOOTER ==================== */}
           <footer className="mt-14 bg-[#111a13] text-white pt-10 sm:pt-12 pb-[max(24px,env(safe-area-inset-bottom))] border-t border-white/10 overflow-hidden">
@@ -869,8 +894,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Direct Action Links & Quick Buy - Clean 2x2 on mobile, row on desktop */}
-                <div className="grid grid-cols-2 md:flex md:items-center gap-2 md:gap-3 w-full md:w-auto text-xs min-[360px]:text-[13px]">
+                {/* Direct Action Links & Quick Buy - Clean grid on mobile, row on desktop */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:items-center gap-2 md:gap-3 w-full md:w-auto text-xs min-[360px]:text-[13px]">
                   <button
                     onClick={() => scrollToSection("product-showcase")}
                     className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center rounded-md border border-white/15 bg-white/5 hover:bg-white/10 text-white/85 hover:text-white transition-all whitespace-nowrap cursor-pointer"
@@ -884,6 +909,12 @@ export default function Home() {
                     <span>Ritual Seduh</span>
                   </button>
                   <button
+                    onClick={() => scrollToSection("ulasan")}
+                    className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center rounded-md border border-white/15 bg-white/5 hover:bg-white/10 text-white/85 hover:text-white transition-all whitespace-nowrap cursor-pointer"
+                  >
+                    <span>Ulasan (4.9★)</span>
+                  </button>
+                  <button
                     onClick={() => quickAddToCart(PRODUCTS_DATA[0])}
                     className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center gap-1.5 rounded-md bg-[#6b8f5e] hover:bg-[#7ba36e] text-white font-bold transition-all shadow-xs whitespace-nowrap cursor-pointer active:scale-98"
                   >
@@ -894,7 +925,7 @@ export default function Home() {
                     href="https://wa.me/62895338558400?text=Halo%20Verdantea!%20Saya%20ingin%20konsultasi%20mengenai%20produk%20teh."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-10 px-3 min-[360px]:px-4 flex items-center justify-center gap-1.5 rounded-md border border-[#25d366]/40 bg-[#25d366]/10 hover:bg-[#25d366]/20 text-[#a8c99a] font-medium transition-all whitespace-nowrap"
+                    className="col-span-2 sm:col-span-1 md:col-auto h-10 px-3 min-[360px]:px-4 flex items-center justify-center gap-1.5 rounded-md border border-[#25d366]/40 bg-[#25d366]/10 hover:bg-[#25d366]/20 text-[#a8c99a] font-medium transition-all whitespace-nowrap"
                   >
                     <span>WhatsApp</span>
                     <ArrowRight className="h-3.5 w-3.5 shrink-0" />
@@ -1226,6 +1257,15 @@ export default function Home() {
                     <DialogTitle className="text-[18px] min-[360px]:text-[20px] sm:text-[24px] font-bold tracking-tight text-[#1a2218] leading-tight">
                       {selectedProduct.name}
                     </DialogTitle>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <div className="flex items-center text-[#b8934a]">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-[#b8934a]" />
+                        ))}
+                      </div>
+                      <span className="text-[12px] font-bold text-[#1a2218]">4.9</span>
+                      <span className="text-[11px] text-[#4a5a48]">• 142 Ulasan Terverifikasi</span>
+                    </div>
                     <div className="mt-1.5 flex items-baseline gap-2">
                       <span className="text-[20px] min-[360px]:text-[22px] font-extrabold text-[#2d3d2e]">
                         {formatRp(selectedProduct.price)}

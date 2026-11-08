@@ -3,11 +3,12 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
-import { ShoppingCart, Info, Leaf, Award } from "lucide-react";
+import { ShoppingCart, Info, Leaf, Award, Star } from "lucide-react";
 
 interface LivingTeaChamberProps {
   onQuickAdd: () => void;
   onOpenDetail: () => void;
+  onReviewClick?: () => void;
   priceFormatted: string;
 }
 
@@ -21,6 +22,7 @@ interface LivingTeaChamberProps {
 export function LivingTeaChamber({
   onQuickAdd,
   onOpenDetail,
+  onReviewClick,
   priceFormatted,
 }: LivingTeaChamberProps) {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -140,6 +142,23 @@ export function LivingTeaChamber({
               </div>
             </div>
           </div>
+
+          {/* Sommelier Customer Rating Link */}
+          <button
+            type="button"
+            onClick={onReviewClick}
+            className="flex items-center gap-1.5 pt-0.5 w-fit text-left cursor-pointer group transition-colors"
+          >
+            <div className="flex items-center text-[#b8934a]">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-3 w-3 fill-[#b8934a]" />
+              ))}
+            </div>
+            <span className="text-[11px] font-bold text-[#1a2218]">4.9</span>
+            <span className="text-[10.5px] text-[#4a5a48] group-hover:text-[#2d3d2e] group-hover:underline">
+              (142 ulasan pembeli)
+            </span>
+          </button>
 
           {/* Sensory Terroir Chips */}
           <div className="flex flex-wrap gap-1 min-[360px]:gap-1.5 pt-1">
